@@ -7,9 +7,9 @@ test('Work with us page: FAQ', async ({ page }) => {
   await page.getByRole('button', { name: 'My city is not on the list,' }).click();
   await expect(page.locator('#faq-q1 div').nth(2)).toBeVisible();
   await page.getByRole('button', { name: 'My city is not on the list,' }).click();
-  await page.getByRole('button', { name: 'Are Just Eat riders paid' }).click();
+  await page.getByRole('button', { name: 'Are Ouva DElivery riders paid' }).click();
   await expect(page.locator('#faq-q2 div').nth(2)).toBeVisible();
-  await page.getByRole('button', { name: 'Are Just Eat riders paid' }).click();
+  await page.getByRole('button', { name: 'Are Ouva DElivery riders paid' }).click();
   await page.getByRole('button', { name: 'What type of vehicle and' }).click();
   await expect(page.locator('#faq-q3 div').nth(2)).toBeVisible();
   await page.getByRole('button', { name: 'What type of vehicle and' }).click();
@@ -28,9 +28,9 @@ test('Work with us page: FAQ', async ({ page }) => {
   await page.getByRole('button', { name: 'How do contracts with Just' }).click();
   await expect(page.locator('#faq-q8 div').nth(2)).toBeVisible();
   await page.getByRole('button', { name: 'How do contracts with Just' }).click();
-  await page.getByRole('button', { name: 'How can I become a Just Eat' }).click();
+  await page.getByRole('button', { name: 'How can I become a Ouva DElivery' }).click();
   await expect(page.locator('#faq-q9 div').nth(2)).toBeVisible();
-  await page.getByRole('button', { name: 'How can I become a Just Eat' }).click();
+  await page.getByRole('button', { name: 'How can I become a Ouva DElivery' }).click();
 });
 
 test('Work with us page: Modal', async ({ page }) => {

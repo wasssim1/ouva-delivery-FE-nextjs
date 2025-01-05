@@ -16,14 +16,16 @@
       "button": "Trouvez un restaurant",
       "paragraph1": "Téléchargez l'application Ouva Delivery et commandez où vous voulez, ",
       "paragraph2": "ce que vous voulez",
-      "searchAddress": "Tapez votre adresse"
+      "searchAddress": "Tapez votre adresse",
+      "selectZone": "Sélectionnez votre zone"
     },
     "orders": {
       "title": "Qu'est-ce qui vous fait envie?",
       "searchForRestaurant": "Recherchez un restaurant..."
     },
     "workWithUs": {
-      "title": "Travaillez en tant que livreur",
+      "titleAsMerchant": "Joindre en tant que marchand",
+      "titleAsCourier": "Devenir Ouva livreur",
       "button": "Postulez maintenant",
       "subtitle": "Nous vous offrons un travail",
       "subtitle2": "stable et flexible",
@@ -37,9 +39,12 @@
       "paragraph": "Vous recevrez bientôt un e-mail avec le récapitulatif de votre commande !"
     },
     "store": {
-      "searchFood": "Recherchez dans ",
+      "searchFood": "Recherchez dans",
+      "yourBasket": "Votre panier",
       "viewBasket": "Voir le panier",
-      "addToCart": "Ajouter au panier",
+      "addToBasket": "Ajouter au panier",
+      "description": "Description",
+      "ingredients": "Ingrédients",
       "chooseOptions": "Choisissez les options",
       "chooseExtras": "Choisissez les extras",
       "chooseIngredients": "Choisissez les ingrédients",
@@ -56,7 +61,11 @@
       "productNotAvailable": "Produit non disponible",
       "productNotFound": "Produit non trouvé",
       "productNotAvailableAnymore": "Produit n'est plus disponible"
-    }
+    },
+    "zone": {
+      "noStoresFound": "Aucun restaurant trouvé dans cette zone"
+    },
+    "login": {}
   },
   "components": {
     "navbar": {
@@ -69,17 +78,20 @@
       "allRightsReserved": "Tous droits réservés",
       "footerLinks": {
         "aboutUs": "À propos de nous",
-        "infoAboutJE": "Informations sur Ouva Delivery",
-        "orderNotReceived": "Vous n'avez pas reçu une commande ?",
+        "infoAboutOuva": "Informations sur Ouva Delivery",
+        "contactUs": "Contactez-nous",
+        "termsAndConditions": "Conditions générales",
         "workWithUs": "Travailler avec nous",
-        "cuisines": "Cuisines",
-        "allergies": "Allergies",
+        "restaurants": "Restaurants",
         "findRestaurants": "Trouver des restaurants",
-        "BecomeaJustEatrider": "Devenir livreur sur Ouva Delivery",
+        "customOuvaOrders": "Commandes personnalisées",
+        "becomeOuvaCourier": "Devenir livreur sur Ouva Delivery",
+        "becomeOuvaMerchant": "Devenir marchand sur Ouva Delivery",
         "customerService": "Service client",
         "faq": "Foire aux questions",
-        "downloadJustEatApp": "Téléchargez l'application Ouva Delivery",
-        "registerJustEat": "Inscrivez-vous sur Ouva Delivery"
+        "downloadOuvaApp": "Téléchargez l'application Ouva Delivery",
+        "orderNotReceived": "Vous n'avez pas reçu une commande ?",
+        "registerOuva": "Inscrivez-vous sur Ouva Delivery"
       }
     },
     "cartItem": {
@@ -103,10 +115,11 @@
     "show": "Afficher",
     "showAll": "Afficher tout",
     "freeDelivery": "Livraison gratuite",
-    "minOrder": "commande minimum",
+    "minOrder": "Commande minimum",
     "minOrderRequired": "Commande minimale requise !",
     "noMinOrderRequired": "Aucun min. de commande",
     "delivery": "livraison",
+    "deliveryFee": "Frais de livraison",
     "application": "Candidature",
     "select": "Sélectionner",
     "fileUpdated": "Fichier mis à jour avec succès",
@@ -118,6 +131,7 @@
     "name": "Prénom",
     "lastname": "Nom de famille",
     "phone": "Téléphone",
+    "deliveryZone": "Zone de livraison",
     "deliveryAddress": "Adresse de livraison",
     "city": "Ville",
     "country": "Pays",
@@ -129,20 +143,32 @@
     "expirationDate": "Date d'expiration",
     "confirm": "Confirmer",
     "cancel": "Annuler",
-    "min": "min"
+    "min": "min",
+    "max": "max",
+    "search": "Rechercher",
+    "checkout": "Paiement",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "remove": "Retirer",
+    "adjust": "Ajuster",
+    "addMoreItems": "Ajouter plus d'articles"
   },
   "notifications": {
     "message1": "CV envoyé !",
     "message2": "Vous devez ajouter un fichier !",
     "message3": "Numéro de commande copié !"
   },
-  "cuisines": {
-    "cinese": "Chinois",
-    "fritti": "Frits",
-    "giapponese": "Japonais",
-    "sushi": "Sushi",
-    "hamburger": "Hamburger",
-    "italiano": "Italien",
-    "pizza": "Pizza"
+  "foodCategories": {
+    "salad": "Salade",
+    "sandwitch": "Sandwitch",
+    "pizza": "Pizza",
+    "burger": "Burger",
+    "pasta": "Pâtes",
+    "dessert": "Dessert",
+    "drinks": "Boissons",
+    "snacks": "Snack",
+    "breakfast": "Petit-déjeuner",
+    "lunch": "Déjeuner",
+    "dinner": "Dîner"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "title_website": "Just Eat",
+  "title_website": "Ouva Delivery",
   "localhost": "http://localhost:3000/en/",
   "storageStatePath": "./tests/session/storageState.json",
   "workers": 3,

@@ -14,7 +14,7 @@
     "home": {
       "title": "Tuck into a takeaway today!",
       "button": "Find a restaurant",
-      "paragraph1": "Download the Just Eat app",
+      "paragraph1": "Download the Ouva Delivery app",
       "paragraph2": "and order wherever you want"
     },
     "orders": {
@@ -27,7 +27,7 @@
       "subtitle": "We offer you a",
       "subtitle2": "stable and flexible job",
       "paragraph": "Deliver your orders... we take care of the rest!",
-      "descrApplication": "Attach your updated resume here containing information such as name, surname, and telephone number to be contacted. JustEat's team is the ideal place where everyone can write their professional story by contributing, with commitment and determination, to write the country's history. We're waiting for you!",
+      "descrApplication": "Attach your updated resume here containing information such as name, surname, and telephone number to be contacted. Ouva's team is the ideal place where everyone can write their professional story by contributing, with commitment and determination, to write the country's history. We're waiting for you!",
       "uploadedFile": "Uploaded file:",
       "dragHereYourFileOr": "Drag your file here or",
       "sendApplication": "Send application"
@@ -47,17 +47,17 @@
       "allRightsReserved": "All Rights Reserved",
       "footerLinks": {
         "aboutUs": "About us",
-        "infoAboutJE": "Informations about Just Eat",
+        "infoAboutJE": "Informations about Ouva Delivery",
         "orderNotReceived": "Have you not received an order?",
         "workWithUs": "Work with us",
         "cuisines": "Cuisines",
         "allergies": "Allergies",
         "findRestaurants": "Find restaurants",
-        "BecomeaJustEatrider": "Become a rider on Just Eat",
+        "becomeOuvaCourier": "Become a rider on Ouva Delivery",
         "customerService": "Customer Service",
         "faq": "Frequently Asked Questions",
-        "downloadJustEatApp": "Download the Just Eat app",
-        "registerJustEat": "Register on Just Eat"
+        "downloadOuvaApp": "Download the Ouva Delivery app",
+        "registerOuva": "Register on Ouva Delivery"
       }
     },
     "cartItem": {
