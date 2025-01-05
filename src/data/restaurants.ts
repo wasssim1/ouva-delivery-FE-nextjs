@@ -1,22 +1,24 @@
-import { FoodStore } from "@/interfaces/foodStore.interface";
+import { FoodStore } from "@/interfaces/food-store.interface";
 
 const GUITARA_RESTAURANT: FoodStore = {
   slug: "guitara",
   name: "Guitara",
   description: "Guitara is a restaurant that serves delicious food",
   address: "Mourouj 3, TN",
+  zone: "el-mourouj",
   logo: "https://ouvadelivery.com/wp-content/uploads/2022/06/WhatsApp-Image-2022-06-03-at-15.27.26-300x300.jpeg",
   image:
     "https://ouvadelivery.com/wp-content/uploads/2023/05/guitar-scaled.jpg",
   shippingCost: {
     isFreeShipping: false,
-    minOrder: 0,
+    minOrder: 30,
     cost: 3,
   },
   deliveryTime: {
     min: 30,
     max: 45,
   },
+  storeMaxOrder: 5,
   categories: ["pizza", "pasta", "salad", "dessert", "drinks"],
   menuSections: [
     {
@@ -66,7 +68,8 @@ const GUITARA_RESTAURANT: FoodStore = {
           name: "Neptune",
           description: "Mozzarella, Sauce tomate, Thon",
           basePrice: 7.5,
-          image: "",
+          image:
+            "https://ouvadelivery.com/wp-content/uploads/2022/05/pizza-margher.jpg?zoom=2&resize=600%2C300&ssl=1",
           ingredients: ["tomato", "mozzarella", "tuna"],
           options: [
             {
@@ -177,6 +180,7 @@ const SHES_CAKE_RESTAURANT: FoodStore = {
   slug: "shes-cake",
   name: "She's Cake",
   address: "Mourouj 5, TN",
+  zone: "el-mourouj",
   logo: "https://ouvadelivery.com/wp-content/uploads/2023/06/344769648_255615043492416_2712909520938809756_n.jpg",
   image: "https://ouvadelivery.com/wp-content/uploads/2022/05/crepe.jpg",
   rating: 4.5,

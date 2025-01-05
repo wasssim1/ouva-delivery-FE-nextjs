@@ -1,20 +1,29 @@
 import { useTranslations } from "next-intl";
 import { FaShoppingBasket } from "react-icons/fa";
-import { useSelector } from "react-redux";
 
-import { RootState } from "@/redux/store";
-import { defaultCurrency } from "@/settings/const";
+import { BasketState } from "@/interfaces/basket.interface";
+import { calculateTotalBasketItemsPrice, toLocaleCurrency } from "@/lib/utils";
 
 interface StickyBasketButtonProps {
+  basketData: BasketState;
   setIsCartDialogOpen: (value: boolean) => void;
 }
 
 export function StickyBasketButton({
+  basketData,
   setIsCartDialogOpen,
 }: StickyBasketButtonProps) {
   const t = useTranslations();
 
-  const cart = useSelector((state: RootState) => state.cart);
+  // const cart = useSelector((state: RootState) => state.cart);
+
+  if (!basketData.orderItems?.length) {
+    return null;
+  }
+
+  const calculateItemsCount = () => {
+    return basketData.orderItems.reduce((acc, item) => acc + item.quantity, 0);
+  };
 
   return (
     <div className="sticky bottom-0 flex justify-center w-full m-2 p-2 shadow-inner bg-white">
@@ -22,19 +31,16 @@ export function StickyBasketButton({
         className="flex justify-between items-center w-[95%] md:w-[70%] lg:w-[40%] p-3 font-bold text-white rounded-2xl bg-primary hover:bg-secondary focus:outline-none focus:shadow-outline fading-in-animation"
         onClick={() => setIsCartDialogOpen(true)}
       >
-        <div>
+        <div className="flex">
           <FaShoppingBasket size={24} />
-          {!!cart.orderItems?.length && (
-            <small className="">{cart.orderItems.length}</small>
-          )}
+          <span className="absolute top-1 left-7 px-2 text-xs ring-1 ring-primary bg-secondary rounded-full">
+            {basketData.orderItems?.length && (
+              <small className="">{calculateItemsCount()}</small>
+            )}
+          </span>
         </div>
         <p>{t("pages.store.viewBasket")}</p>
-        <p>
-          {cart.total?.toLocaleString("fr-TN", {
-            style: "currency",
-            currency: defaultCurrency,
-          })}
-        </p>
+        <p>{toLocaleCurrency(calculateTotalBasketItemsPrice(basketData))}</p>
       </button>
     </div>
   );

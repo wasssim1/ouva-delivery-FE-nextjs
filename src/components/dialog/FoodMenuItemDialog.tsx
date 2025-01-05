@@ -1,19 +1,14 @@
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { IoAddCircleOutline, IoRemoveCircleOutline } from "react-icons/io5";
-import { useDispatch, useSelector } from "react-redux";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-import { getProductQuantity } from "@/functions/common";
+import { BasketItem, BasketState } from "@/interfaces/basket.interface";
 import {
   ExtraIngredient,
   MenuItem,
   MenuItemOption,
-  MenuItemOrder,
-} from "@/interfaces/foodStore.interface";
-import { removeFromCart } from "@/redux/slices/cartSlice";
-import { RootState } from "@/redux/store";
-import { defaultCurrency } from "@/settings/const";
+} from "@/interfaces/food-store.interface";
+import { toLocaleCurrency } from "@/lib/utils";
 
 import {
   Dialog,
@@ -23,184 +18,239 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { BasketItemQuantityButtons } from "../page-store/BasketItemQuantityButtons";
 
 interface FoodMenuItemDialogProps {
   foodMenuItem: MenuItem;
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
+  basketData: BasketState;
+  setBasketData: Dispatch<SetStateAction<BasketState>>;
+  selectedBasketItemToEditKey: string | null;
+  setSelectedBasketItemToEditKey: Dispatch<SetStateAction<string | null>>;
 }
 
 export function FoodMenuItemDialog({
   foodMenuItem,
+  basketData,
   isOpen,
   setIsOpen,
+  setBasketData,
+  selectedBasketItemToEditKey,
+  setSelectedBasketItemToEditKey,
 }: FoodMenuItemDialogProps) {
   const t = useTranslations();
 
-  const dispatch = useDispatch();
-  const cart = useSelector((state: RootState) => state.cart);
+  // const dispatch = useDispatch();
+  // const cart = useSelector((state: RootState) => state.cart);
 
-  const [itemSelection, setItemSelection] = useState<MenuItemOrder>(
-    {} as MenuItemOrder
+  const [isEditingKey, setIsEditing] = useState(selectedBasketItemToEditKey);
+  const [itemSelection, setItemSelection] = useState<BasketItem>(
+    {} as BasketItem
   );
 
   const onSelectedOptionChange = (option: MenuItemOption) => {
     const newSelection = { ...itemSelection };
 
+    newSelection.basketItemKey = `${foodMenuItem.slug}_${option.slug}`;
     newSelection.selectedOption = option;
-    newSelection.finalPrice = option.price;
+    newSelection.finalUnitPrice = option.price;
+
     setItemSelection(newSelection);
   };
 
   const onExtraIngredientChange = (ingredient: ExtraIngredient) => {
     const newSelection = { ...itemSelection };
 
-    if (
-      newSelection.extraIngredients?.some((i) => i.slug === ingredient.slug)
-    ) {
-      newSelection.extraIngredients = newSelection.extraIngredients.filter(
+    if (newSelection.selectedExtras?.some((i) => i.slug === ingredient.slug)) {
+      newSelection.selectedExtras = newSelection.selectedExtras.filter(
         (i) => i.slug !== ingredient.slug
       );
-      newSelection.finalPrice -= ingredient.extraPrice;
+      newSelection.finalUnitPrice -=
+        ingredient.extraPrice * newSelection.quantity;
     } else {
-      if (!newSelection.extraIngredients) newSelection.extraIngredients = [];
-      newSelection.extraIngredients.push(ingredient);
-      newSelection.finalPrice += ingredient.extraPrice;
+      if (!newSelection.selectedExtras) newSelection.selectedExtras = [];
+      newSelection.selectedExtras.push(ingredient);
+      newSelection.finalUnitPrice +=
+        ingredient.extraPrice * newSelection.quantity;
     }
+    newSelection.basketItemKey = `${foodMenuItem.slug}_${
+      newSelection.selectedOption.slug
+    }_${newSelection.selectedExtras.map((ing) => ing.slug).join("_")}`;
 
     setItemSelection(newSelection);
   };
 
   const updateSelectionQte = (quantity: number) => {
-    setItemSelection((prev) => ({ ...prev, quantity }));
+    setItemSelection((prev) => ({
+      ...prev,
+      quantity,
+      finalUnitPrice:
+        quantity *
+        (prev.selectedOption.price +
+          (prev.selectedExtras
+            ? prev.selectedExtras.reduce((acc, i) => acc + i.extraPrice, 0)
+            : 0)),
+    }));
   };
 
   // functions to add an article from the cart
-  const addToCartFunction = (orderItem: MenuItemOrder) => {
-    console.log({ itemSelection });
+  const addToCartFunction = (basketOrderItem: BasketItem) => {
+    // TODO: fix cart edge-cases
+    setBasketData((prev: BasketState) => {
+      console.log({ prev });
 
-    // dispatch(addToCart(article));
+      // handle existing items by increasing qte
+      const existingEditedItemInBasket = prev.orderItems.find(
+        (item) => item.basketItemKey === isEditingKey
+      );
+
+      let _basketState = { ...prev };
+
+      console.log({ existingEditedItemInBasket, basketOrderItem });
+
+      if (existingEditedItemInBasket) {
+        let _orderItems = prev.orderItems.map((item) => {
+          console.log({ item });
+
+          if (item.basketItemKey === basketOrderItem.basketItemKey) {
+            return {
+              ...item,
+              quantity: basketOrderItem.quantity + item.quantity,
+            };
+          }
+
+          // if (item.basketItemKey === existingEditedItemInBasket.basketItemKey) {
+          //   return {
+          //     ...item,
+          //     quantity: item.quantity + basketOrderItem.quantity,
+          //   };
+          // }
+
+          return item;
+        });
+
+        if (
+          basketOrderItem.basketItemKey !==
+          existingEditedItemInBasket.basketItemKey
+        ) {
+          _orderItems = _orderItems.filter(
+            (item) =>
+              item.basketItemKey !== existingEditedItemInBasket.basketItemKey
+          );
+        }
+        console.log({ _orderItems });
+
+        _basketState = {
+          ...prev,
+          orderItems: _orderItems,
+        };
+      } else {
+        // remove the edited item if basketItemKey is changed (changed option or extras)
+        const _orderItems = prev.orderItems.filter(
+          (item) => item.basketItemKey !== isEditingKey
+        );
+
+        _basketState = {
+          ...prev,
+          orderItems: [..._orderItems, basketOrderItem],
+        };
+      }
+
+      localStorage.setItem(
+        `${prev.foodStore.slug}-basket-state`,
+        JSON.stringify(_basketState)
+      );
+
+      return _basketState;
+    });
+
+    // close the dialog
+    setIsOpen(false);
   };
-
-  // function to remove the article from the cart
-  const removeFromCartFunction = (orderItem: MenuItemOrder) => {
-    dispatch(removeFromCart(orderItem));
-  };
-
-  // function that returns the quantity of a specific product as a number
-  const quantityInCart = getProductQuantity(cart);
 
   useEffect(() => {
-    setItemSelection((prev) => ({
-      ...prev,
-      itemSlug: foodMenuItem.slug,
-      quantity: 1,
-      finalPrice: 0,
-    }));
+    if (isEditingKey) {
+      setItemSelection((prev) => {
+        const itemToEdit = basketData.orderItems.find(
+          (item) => item.basketItemKey === isEditingKey
+        );
+        if (!itemToEdit) return prev;
+        return {
+          ...prev,
+          ...itemToEdit,
+        };
+      });
+    } else {
+      setItemSelection((prev) => ({
+        ...prev,
+        basketItemKey: isEditingKey || foodMenuItem.slug,
+        itemDetails: foodMenuItem,
+        quantity: 1,
+        finalUnitPrice: 0,
+      }));
+    }
+  }, []);
 
+  useEffect(() => {
     return () => {
       // cleanup
-      setItemSelection({} as MenuItemOrder);
+      setItemSelection({} as BasketItem);
+      setSelectedBasketItemToEditKey(null);
     };
   }, [isOpen]);
 
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogHeader>
-          <DialogTitle>{t("common.cart")}</DialogTitle>
-        </DialogHeader>
-
-        <DialogContent title={t("common.close")}>
-          <Image
-            src={foodMenuItem.image}
-            alt={foodMenuItem.name}
-            width={120}
-            height={120}
-            className="rounded-lg object-cover"
-          />
-
-          <div className="flex justify-between items-center text-primary w-full mt-5">
-            <DialogTitle className="text-lg font-semibold">
-              {foodMenuItem.name}
+        <DialogContent className="h-[70%]" title={t("common.close")}>
+          <DialogHeader className="sticky">
+            <DialogTitle className="text-primary text-xl">
+              {`${foodMenuItem.name}, ${basketData.foodStore.name}`}
             </DialogTitle>
-            <DialogDescription className="text-primary text-lg text-black italic pr-2.5 select-none">
-              <span>
-                {foodMenuItem.basePrice?.toLocaleString("fr-TN", {
-                  // 🇹🇳 TODO: Move to settings and utils
-                  style: "currency",
-                  currency: defaultCurrency,
-                })}
-              </span>
-            </DialogDescription>
-          </div>
+          </DialogHeader>
 
-          {/* show ingredients */}
-          <div className="text-primary w-full">
-            <DialogTitle className="text-lg font-semibold">
-              {t("pages.store.ingredients")}
-            </DialogTitle>
-            <DialogDescription className="text-primary text-sm text-black italic pr-2.5 select-none">
-              <span>{foodMenuItem.ingredients.join(", ")}</span>
-            </DialogDescription>
-          </div>
+          <div className="my-10 space-y-5 overflow-y-auto">
+            <Image
+              src={foodMenuItem.image}
+              alt={foodMenuItem.name}
+              width={120}
+              height={120}
+              className="rounded-lg object-cover"
+            />
 
-          {/* <div className="mt-5">
-            <DialogTitle className="text-lg font-semibold">
-              {t("pages.store.options")}
-            </DialogTitle>
-            <ul className="list-none">
-              {foodMenuItem.options?.map((option, index) => (
-                <li key={index} className="flex justify-between items-center">
-                  <span>{option.name}</span>
-                  <span>{option.price}</span>
-                </li>
-              ))}
-            </ul>
-          </div> */}
+            {/* description */}
+            {foodMenuItem.description && (
+              <div>
+                <DialogTitle className="text-primary text-lg font-semibold">
+                  {t("pages.store.description")}
+                </DialogTitle>
+                <DialogDescription className="text-gray-500 text-sm italic select-none">
+                  <span>{foodMenuItem.description}</span>
+                </DialogDescription>
+              </div>
+            )}
 
-          {/* list of menu item options in Radio button (single selection) */}
-          <div className="">
-            <DialogTitle className="text-lg font-semibold">
-              {t("pages.store.options")}
-            </DialogTitle>
-            <ul className="list-none">
-              {foodMenuItem.options?.map((option, index) => (
-                <li
-                  key={index}
-                  className="flex justify-between items-center space-y-1"
-                >
-                  <div className="space-x-2">
-                    <input
-                      className="accent-primary"
-                      type="radio"
-                      name="options"
-                      id={option.name}
-                      value={option.name}
-                      onChange={() => onSelectedOptionChange(option)}
-                    />
-                    <span>{option.name}</span>
-                  </div>
-                  <span>
-                    {option.price.toLocaleString("fr-TN", {
-                      style: "currency",
-                      currency: defaultCurrency,
-                    })}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+            {/* show ingredients */}
+            {foodMenuItem.ingredients?.length && (
+              <div className="">
+                <DialogTitle className="text-primary text-lg font-semibold">
+                  {t("pages.store.ingredients")}
+                </DialogTitle>
+                <DialogDescription className="text-sm italic select-none">
+                  <span>{foodMenuItem.ingredients.join(", ")}</span>
+                </DialogDescription>
+              </div>
+            )}
 
-          {/* list of menu item extra ingredients in checkboxes (multi-selection) */}
-          {itemSelection.selectedOption && (
-            <div className="">
-              <DialogTitle className="text-lg font-semibold">
-                {t("pages.store.extraIngredients")}
-              </DialogTitle>
-              <ul className="list-none">
-                {foodMenuItem.extraIngredients?.map(
-                  (extraIngredient, index) => (
+            {/* list of menu item options in Radio button (single selection) */}
+            {foodMenuItem.options?.length && (
+              <div className="">
+                <DialogTitle className="text-primary text-lg font-semibold">
+                  {t("pages.store.chooseOptions")}
+                </DialogTitle>
+                <ul className="list-none">
+                  {foodMenuItem.options.map((option, index) => (
                     <li
                       key={index}
                       className="flex justify-between items-center space-y-1"
@@ -208,66 +258,87 @@ export function FoodMenuItemDialog({
                       <div className="space-x-2">
                         <input
                           className="accent-primary"
-                          type="checkbox"
-                          name="ingredients"
-                          id={extraIngredient.name}
-                          value={extraIngredient.name}
-                          onChange={() =>
-                            onExtraIngredientChange(extraIngredient)
+                          type="radio"
+                          name="options"
+                          id={option.name}
+                          value={option.name}
+                          checked={
+                            itemSelection.selectedOption?.slug === option.slug
                           }
+                          onChange={() => onSelectedOptionChange(option)}
                         />
-                        <span>{extraIngredient.name}</span>
+                        <span>{option.name}</span>
                       </div>
-                      <span>
-                        {extraIngredient.extraPrice.toLocaleString("fr-TN", {
-                          style: "currency",
-                          currency: defaultCurrency,
-                        })}
-                      </span>
+                      <span>{toLocaleCurrency(option.price)}</span>
                     </li>
-                  )
-                )}
-              </ul>
-            </div>
-          )}
-
-          <DialogFooter>
-            <span className="flex items-center justify-between">
-              <div className="flex items-center justify-between">
-                <button
-                  className="disabled:opacity-50"
-                  disabled={itemSelection.quantity === 1}
-                  onClick={() => updateSelectionQte(--itemSelection.quantity)}
-                >
-                  <IoRemoveCircleOutline className="text-primary" size={24} />
-                </button>
-                <span className="w-8 text-center text-lg select-none">
-                  {itemSelection.quantity}
-                  {/* {quantityInCart(
-                  foodMenuItem.products[0].name,
-                  foodMenuItem.restaurant.id
-                )} */}
-                </span>
-                <button
-                  onClick={() => updateSelectionQte(++itemSelection.quantity)}
-                >
-                  <IoAddCircleOutline className="text-primary" size={24} />
-                </button>
+                  ))}
+                </ul>
               </div>
-              {!!itemSelection.finalPrice && (
-                <button
-                  className="flex justify-between items-center p-3 font-bold text-white rounded-2xl bg-primary hover:bg-secondary"
-                  onClick={() => addToCartFunction(itemSelection)}
-                >
-                  {t("pages.store.addToCart")}{" "}
-                  {itemSelection.finalPrice?.toLocaleString("fr-TN", {
-                    style: "currency",
-                    currency: defaultCurrency,
-                  })}
-                </button>
+            )}
+
+            {/* list of menu item extra ingredients in checkboxes (multi-selection) */}
+            {itemSelection.selectedOption &&
+              foodMenuItem.extraIngredients?.length && (
+                <div className="">
+                  <DialogTitle className="text-primary text-lg font-semibold">
+                    {t("pages.store.chooseExtras")}
+                  </DialogTitle>
+                  <ul className="list-none">
+                    {foodMenuItem.extraIngredients.map(
+                      (extraIngredient, index) => (
+                        <li
+                          key={index}
+                          className="flex justify-between items-center space-y-1"
+                        >
+                          <div className="space-x-2">
+                            <input
+                              className="accent-primary"
+                              type="checkbox"
+                              name="ingredients"
+                              id={extraIngredient.name}
+                              value={extraIngredient.name}
+                              checked={itemSelection.selectedExtras?.some(
+                                (i) => i.slug === extraIngredient.slug
+                              )}
+                              onChange={() =>
+                                onExtraIngredientChange(extraIngredient)
+                              }
+                            />
+                            <span>{extraIngredient.name}</span>
+                          </div>
+                          <span>
+                            {toLocaleCurrency(extraIngredient.extraPrice)}
+                          </span>
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </div>
               )}
-            </span>
-          </DialogFooter>
+          </div>
+
+          {!!itemSelection.finalUnitPrice && (
+            <DialogFooter className="sticky">
+              <span className="flex items-center justify-between">
+                <BasketItemQuantityButtons
+                  quantity={itemSelection.quantity}
+                  updateSelectionQte={updateSelectionQte}
+                  maxQuantityCount={basketData.foodStore?.storeMaxOrder}
+                />
+                {!!itemSelection.finalUnitPrice && (
+                  <button
+                    className="flex justify-between items-center p-3 font-bold text-white rounded-2xl bg-primary hover:bg-secondary"
+                    onClick={() => addToCartFunction(itemSelection)}
+                  >
+                    {isEditingKey
+                      ? t("common.adjust")
+                      : t("pages.store.addToBasket")}{" "}
+                    {toLocaleCurrency(itemSelection.finalUnitPrice)}
+                  </button>
+                )}
+              </span>
+            </DialogFooter>
+          )}
         </DialogContent>
       </Dialog>
     </>

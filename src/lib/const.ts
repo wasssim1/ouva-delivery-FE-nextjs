@@ -1,29 +1,30 @@
-export const initialProduct = { name: '', price: 0, quantity: 0 }
+export const initialProduct = { name: "", price: 0, quantity: 0 };
 
 export const initialRestaurant = {
-  id: '',
-  category: '',
-  name: '',
+  id: "",
+  category: "",
+  name: "",
   address: {
-    street: '',
-    postalCode: '',
-    city: ''
+    street: "",
+    postalCode: "",
+    city: "",
   },
-  image: '',
+  image: "",
   shippingCost: {
     freeShipping: true,
     shippingCost: 0,
-    minOrder: 0
-  }
-}
+    minOrder: 0,
+  },
+};
 
 export const initialUserProfile = {
-  name: '',
-  lastname: '',
-  email: '',
-  phone: '',
-  address: '',
-  zip: '',
-  city: 'Tunis',
-  country: 'Tunisia',
-}
+  name: "",
+  lastname: "",
+  email: "",
+  phone: "",
+  address: "",
+  addressZone: "",
+  zip: "",
+  city: "Tunis",
+  country: "Tunisie",
+};

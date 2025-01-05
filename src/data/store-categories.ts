@@ -1,69 +1,52 @@
-import { StoreCategory } from "@/interfaces/foodStore.interface";
-import {
-  FaBirthdayCake,
-  FaCocktail,
-  FaDrumstickBite,
-  FaFish,
-  FaHamburger,
-  FaLeaf,
-  FaPizzaSlice,
-  FaUtensils,
-} from "react-icons/fa";
-import { IoFastFood } from "react-icons/io5";
+import { StoreCategory } from "@/interfaces/food-store.interface";
 
 export const STORE_CATEGORIES: StoreCategory[] = [
   {
-    slug: "salade",
-    name: "salade",
-    image: "assets/img/cucine/cinese.jpg",
-    CompIcon: FaLeaf,
-  },
-  {
-    slug: "chicken",
-    name: "chicken",
-    image: "assets/img/cucine/fritti.jpg",
-    CompIcon: FaDrumstickBite,
-  },
-  {
-    slug: "pizza",
-    name: "pizza",
-    image: "assets/img/cucine/pizza.jpg",
-    CompIcon: FaPizzaSlice,
+    slug: "salad",
+    // name: "SALAD",
+    image:
+      "https://glovo.dhmedia.io/image/customer-assets-glovo/search_filters/4347f26572f04e8524723d5a74f2e4eeadf8a54cb6166e5d211ee29b7111eba2?t=W3siYXV0byI6eyJxIjoibG93In19XQ==",
   },
   {
     slug: "sandwich",
-    name: "sandwich",
-    image: "assets/img/cucine/giapponese.jpg",
-    CompIcon: IoFastFood,
+    // name: "SANDWICH",
+    image:
+      "https://glovo.dhmedia.io/image/customer-assets-glovo/search_filters/4347f26572f04e8524723d5a74f2e4eeadf8a54cb6166e5d211ee29b7111eba2?t=W3siYXV0byI6eyJxIjoibG93In19XQ==",
   },
   {
-    slug: "hamburger",
-    name: "hamburger",
-    image: "assets/img/cucine/hamburger.jpg",
-    CompIcon: FaHamburger,
+    slug: "pizza",
+    // name: "PIZZA",
+    image:
+      "https://glovo.dhmedia.io/image/customer-assets-glovo/search_filters/4347f26572f04e8524723d5a74f2e4eeadf8a54cb6166e5d211ee29b7111eba2?t=W3siYXV0byI6eyJxIjoibG93In19XQ==",
+  },
+  {
+    slug: "chicken",
+    // name: "Chicken",
+    image:
+      "https://glovo.dhmedia.io/image/customer-assets-glovo/search_filters/4347f26572f04e8524723d5a74f2e4eeadf8a54cb6166e5d211ee29b7111eba2?t=W3siYXV0byI6eyJxIjoibG93In19XQ==",
   },
   {
     slug: "fish",
-    name: "fish",
-    image: "assets/img/cucine/sushi.jpg",
-    CompIcon: FaFish,
+    // name: "Fish",
+    image:
+      "https://glovo.dhmedia.io/image/customer-assets-glovo/search_filters/4347f26572f04e8524723d5a74f2e4eeadf8a54cb6166e5d211ee29b7111eba2?t=W3siYXV0byI6eyJxIjoibG93In19XQ==",
   },
   {
-    slug: "sides",
-    name: "sides",
-    image: "assets/img/cucine/italiano.jpg",
-    CompIcon: FaUtensils,
+    slug: "snacks",
+    // name: "Snacks",
+    image:
+      "https://glovo.dhmedia.io/image/customer-assets-glovo/search_filters/4347f26572f04e8524723d5a74f2e4eeadf8a54cb6166e5d211ee29b7111eba2?t=W3siYXV0byI6eyJxIjoibG93In19XQ==",
   },
   {
     slug: "dessert",
-    name: "dessert",
-    image: "assets/img/cucine/dessert.jpg",
-    CompIcon: FaBirthdayCake,
+    // name: "Dessert",
+    image:
+      "https://glovo.dhmedia.io/image/customer-assets-glovo/search_filters/4347f26572f04e8524723d5a74f2e4eeadf8a54cb6166e5d211ee29b7111eba2?t=W3siYXV0byI6eyJxIjoibG93In19XQ==",
   },
   {
     slug: "drinks",
-    name: "drinks",
-    image: "assets/img/cucine/bevande.jpg",
-    CompIcon: FaCocktail,
+    // name: "Drinks",
+    image:
+      "https://glovo.dhmedia.io/image/customer-assets-glovo/search_filters/4347f26572f04e8524723d5a74f2e4eeadf8a54cb6166e5d211ee29b7111eba2?t=W3siYXV0byI6eyJxIjoibG93In19XQ==",
   },
 ];

@@ -1,4 +1,4 @@
-import { StoreCategory } from "@/interfaces/foodStore.interface";
+import { StoreCategory } from "@/interfaces/food-store.interface";
 
 /* 
   Supported Languages Configuration
@@ -10,15 +10,27 @@ export const supportedLanguages = ["fr", "en"];
 export const defaultLanguage = "fr";
 export const defaultFoodCategory = "pizza";
 
-export const defaultCurrency = "tnd";
+export const defaultCurrency = "tnd"; // 🇹🇳
+export const defaultCurrencyLocale = "fr-TN"; // 🇹🇳
 
 /*
-  These string values correspond to translations in the language JSON files (path -> just-eat\languages). If these values are modified, the corresponding entries in the translations should also be updated to maintain consistency
+  These string values correspond to translations in the language JSON files (path -> ouva\languages). If these values are modified, the corresponding entries in the translations should also be updated to maintain consistency
 */
 export const footerLinksList: Array<string[]> = [
-  ["aboutUs", "infoAboutJE", "orderNotReceived", "workWithUs"],
-  ["cuisines", "allergies", "findRestaurants", "BecomeaJustEatrider"],
-  ["customerService", "faq", "downloadJustEatApp", "registerJustEat"],
+  [
+    "aboutUs",
+    "contactUs",
+    "workWithUs",
+    "downloadOuvaApp",
+    "termsAndConditions",
+  ],
+  [
+    "restaurants",
+    "becomeOuvaCourier",
+    "becomeOuvaMerchant",
+    "customOuvaOrders",
+  ],
+  ["customerService", "faq", "orderNotReceived", "registerOuva"],
 ];
 
 /*

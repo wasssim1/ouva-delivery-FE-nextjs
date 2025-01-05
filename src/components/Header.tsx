@@ -6,8 +6,8 @@ const headerVariants = cva(
   {
     variants: {
       bgHeight: {
-        default: "jumbotron-justeat",
-        small: "jumbotron-justeat-orders",
+        default: "jumbotron-ouva",
+        small: "jumbotron-ouva-orders",
       },
       bgColor: {
         default: "bg-white",

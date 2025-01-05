@@ -91,6 +91,7 @@ export interface UserFormProfile {
   email: string;
   phone: string;
   address: string;
+  addressZone: string;
   zip: string;
   city: string;
   country: string;

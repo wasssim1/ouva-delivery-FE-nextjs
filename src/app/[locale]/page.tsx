@@ -5,8 +5,11 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "react-amazing-hooks";
-import { FaRegTimesCircle, FaSearchLocation } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
+import { FaSearchLocation } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+
+import { ZONES_LIST_DATA } from "@/data/zones";
+import { updateUserInfo } from "@/redux/slices/userSlice";
 
 // components
 import Header from "@/components/Header";
@@ -15,19 +18,17 @@ import Footer from "@/components/footer/Footer";
 import Navbar from "@/components/navbar/Navbar";
 import Paragraph from "@/components/typography/Paragraph";
 import Title from "@/components/typography/Title";
-import { updateUserInfo } from "@/redux/slices/userSlice";
-import { RootState } from "@/redux/store";
 
 // assets
 const headerImage = "/assets/img/gallery/image-5.png";
 const appStore = "/assets/img/app-store.png";
 const appStoreMobile = "/assets/img/app-store-mobile.jpg";
-const smartPhoneImage = "/assets/img/apps_promo-wide-je.png";
+const smartPhoneImage = "/assets/img/logo-large-ouva.png";
 
 export default function HomePage() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const userInfo = useSelector((state: RootState) => state.user);
+  // const userInfo = useSelector((state: RootState) => state.user);
 
   const t = useTranslations();
   const isDesktop = useMediaQuery({ min: 992 });
@@ -35,13 +36,19 @@ export default function HomePage() {
   const language = useLocale();
   const [showImages, setShowImages] = useState(false);
 
-  const [searchAddressText, setSearchAddressText] = useState(userInfo.address);
-  const [selectedAddress, setSelectedAddress] = useState("");
-  const clearAddressSearch = () => {
-    dispatch(updateUserInfo({ address: "" }));
-    setSearchAddressText("");
-    setSelectedAddress("");
+  const [selectedZone, setSelectedZone] = useState("");
+  const onZoneChange = (value: string) => {
+    dispatch(updateUserInfo({ addressZone: value }));
+    setSelectedZone(value);
   };
+
+  // const [searchAddressText, setSearchAddressText] = useState(userInfo.address);
+  // const [selectedAddress, setSelectedAddress] = useState("");
+  // const clearAddressSearch = () => {
+  //   dispatch(updateUserInfo({ address: "" }));
+  //   setSearchAddressText("");
+  //   setSelectedAddress("");
+  // };
 
   const inputRef = useRef<HTMLInputElement>(null);
   const focusInputFunction = useCallback(() => {
@@ -50,10 +57,8 @@ export default function HomePage() {
   }, []);
 
   const onSearchClick = () => {
-    alert(searchAddressText);
-    dispatch(updateUserInfo({ address: searchAddressText }));
-
-    router.push(`/${language}/orders`);
+    dispatch(updateUserInfo({ addressZone: selectedZone }));
+    router.push(`/${language}/zone/${selectedZone}`);
   };
 
   useEffect(() => {
@@ -76,28 +81,49 @@ export default function HomePage() {
             <div className="mt-10 text-center">
               <Title>{t("pages.home.title")}</Title>
             </div>
-            
+
             <div
               className="container px-3 mx-auto md:px-2"
               onClick={focusInputFunction}
             >
-              <div className="flex items-center w-full px-4 mx-auto mb-5 border-2 rounded-full border-slate-200 hover:border-slate-300">
-                <button className="mr-3" onClick={onSearchClick}>
+              <div className=" flex justify-between items-center w-full pl-10 pr-12 text-gray-700 bg-white border rounded-full focus:outline-none focus:border-secondary">
+                <span className="mr-3">
                   <FaSearchLocation size={22} className="text-primary" />
-                </button>
-                <input
-                  ref={inputRef}
-                  type="text"
-                  className="p-2 my-2 placeholder-gray-400 bg-white border-transparent outline-none"
-                  placeholder={t("pages.home.searchAddress")}
-                  value={searchAddressText}
-                  onChange={(e) => setSearchAddressText(e.target.value)}
-                />
-                {searchAddressText && (
-                  <button className="" onClick={clearAddressSearch}>
-                    <FaRegTimesCircle size={22} className="text-primary" />
-                  </button>
-                )}
+                </span>
+
+                <div className="flex items-center">
+                  <select
+                    // ref={inputRef}
+                    // type="text"
+                    className="p-2 my-2 placeholder-gray-400 bg-white border-transparent outline-none appearance-none"
+                    // placeholder={t("pages.home.searchAddress")}
+                    value={selectedZone}
+                    onChange={(e) => onZoneChange(e.target.value)}
+                  >
+                    <option value="">{t("pages.home.selectZone")}</option>
+                    {ZONES_LIST_DATA.map((zone, index) => (
+                      <option key={index} value={zone.slug}>
+                        {zone.name}
+                      </option>
+                    ))}
+                  </select>
+                  {/* {selectedZone && (
+                    <button className="" onClick={() => onZoneChange("")}>
+                      <FaRegTimesCircle size={22} className="text-primary" />
+                    </button>
+                  )} */}
+                </div>
+
+                <div>
+                  {!!selectedZone && (
+                    <button
+                      className="rounded-lg p-2 mx-3 ring-1 ring-primary bg-primary text-white hover:text-primary hover:bg-white"
+                      onClick={onSearchClick}
+                    >
+                      {t("common.search")}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -122,8 +148,8 @@ export default function HomePage() {
                       className={`${isMobile ? "w-52" : "w-80"}`}
                       width={`${isMobile ? 208 : 320}`}
                       height={`${isMobile ? 208 : 320}`}
-                      alt="App JustEat"
-                      title="App JustEat"
+                      alt="App OuvaDelivery"
+                      title="App OuvaDelivery"
                       loading="lazy"
                     />
                   </>
@@ -145,8 +171,8 @@ export default function HomePage() {
                         src={isDesktop ? appStore : appStoreMobile}
                         width={`${isDesktop ? 384 : 160}`}
                         height={`${isDesktop ? 384 : 160}`}
-                        alt="App JustEat"
-                        title="App JustEat"
+                        alt="App OuvaDelivery"
+                        title="App OuvaDelivery"
                         loading="lazy"
                       />
                     </>
@@ -156,7 +182,7 @@ export default function HomePage() {
             </div>
           </main>
         </div>
-        
+
         <Footer />
       </LayoutContainer>
     </>

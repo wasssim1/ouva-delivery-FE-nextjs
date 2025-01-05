@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 
-import { MenuSection } from "@/interfaces/foodStore.interface";
+import { MenuSection } from "@/interfaces/food-store.interface";
 import "swiper/css";
 
 interface CategorySwiperProps {
@@ -24,8 +24,6 @@ export function FoodSectionSwiper({
     const activeIndex = foodSections.findIndex(
       (section) => section.sectionSlug === sectionSlug
     );
-
-    console.log({ sectionSlug, activeIndex });
 
     if (swiperRef.current && activeIndex !== -1) {
       swiperRef.current.slideTo(activeIndex);

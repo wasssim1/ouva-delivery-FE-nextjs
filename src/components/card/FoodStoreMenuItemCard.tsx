@@ -2,8 +2,8 @@ import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
-import { MenuItem } from "@/interfaces/foodStore.interface";
-import { defaultCurrency } from "@/settings/const";
+import { MenuItem } from "@/interfaces/food-store.interface";
+import { toLocaleCurrency } from "@/lib/utils";
 
 interface RestaurantMenuItemsCardsProps {
   menuItem: MenuItem;
@@ -31,10 +31,7 @@ export function RestaurantMenuItemCard({
           <p className="text-sm text-gray-600 mt-1">{menuItem.description}</p>
           <div className="mt-2 flex items-center justify-between">
             <p className="text-secondary font-bold">
-              {menuItem.basePrice?.toLocaleString("fr-TN", {
-                style: "currency",
-                currency: defaultCurrency,
-              })}
+              {toLocaleCurrency(menuItem.basePrice)}
             </p>
             <button
               className="p-1 rounded-full hover:bg-gray-100"

@@ -1,9 +1,9 @@
 import { useMediaQuery } from "react-amazing-hooks";
 
-import { StoreCategory } from "@/interfaces/foodStore.interface";
+import { StoreCategory } from "@/interfaces/food-store.interface";
 
 import { getResponsiveSettings } from "@/functions/common";
-import CardsCategory from "./card/CardsCategory";
+import CardsCategory from "./card/FoodCategoryCard";
 import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
 
 interface StoreCategoriesCarouselProps {
@@ -34,14 +34,11 @@ export function StoreCategoriesCarousel({
               align: "start",
               ...currentSettings,
             }}
-            className="flex mx-auto px-2.5 h-fit cursor-grab max-w-[987px]"
+            className="flex justify-center space-x-2 mx-auto px-2.5 h-fit cursor-grab max-w-[987px]"
           >
             <CarouselContent>
-              {categories.map(({ slug, image, CompIcon, name }) => (
-                <CarouselItem
-                  key={slug}
-                  className="pl-0 mx-auto basis-1/4 sm:basis-1/5 md:basis-1/6 lg:basis-1/6"
-                >
+              {categories.map(({ slug, image, CompIcon }) => (
+                <CarouselItem key={slug} className="px-2 mx-auto basis-1/4">
                   <div
                     className={`m-1${
                       selectedCategory === slug ? " border-secondary" : ""
@@ -49,7 +46,6 @@ export function StoreCategoriesCarousel({
                   >
                     <CardsCategory
                       slug={slug}
-                      title={name}
                       imgSRC={image}
                       CompIcon={CompIcon}
                       selectedCategory={selectedCategory}
@@ -64,11 +60,10 @@ export function StoreCategoriesCarousel({
       ) : (
         <div className="container w-full mx-auto mt-10">
           <div className="flex justify-around mx-auto gap-2 max-w-[987px]">
-            {categories.map(({ slug, image, CompIcon, name }) => (
+            {categories.map(({ slug, image, CompIcon }) => (
               <CardsCategory
                 key={"card_cuisine_" + slug}
                 slug={slug}
-                title={name}
                 imgSRC={image}
                 CompIcon={CompIcon}
                 selectedCategory={selectedCategory}

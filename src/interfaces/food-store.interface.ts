@@ -3,10 +3,12 @@ export interface FoodStore {
   name: string;
   description?: string;
   address: string;
+  zone: string;
   logo: string;
   image: string;
   shippingCost: StoreShippingCost;
   deliveryTime: StoreDeliveryTime;
+  storeMaxOrder?: number;
   categories: string[];
   menuSections: MenuSection[];
   tags?: StoreTag[];
@@ -16,7 +18,7 @@ export interface FoodStore {
 
 export interface StoreCategory {
   slug: string;
-  name: string;
+  // name: string;
   image: string;
   CompIcon?: any;
 }
@@ -65,15 +67,6 @@ export interface ExtraIngredient {
   slug: string;
   name: string;
   extraPrice: number;
-}
-
-export interface MenuItemOrder {
-  itemSlug: string;
-  basePrice: number;
-  finalPrice: number;
-  selectedOption: MenuItemOption;
-  extraIngredients: ExtraIngredient[];
-  quantity: number;
 }
 
 export interface FoodStoreReview {

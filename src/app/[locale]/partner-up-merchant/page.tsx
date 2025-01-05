@@ -5,8 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 
 // data & assets
 import faq from "@/data/faq.json";
-const imageRider1 = "/assets/img/riders.webp";
-const imageRider2 = "/assets/img/riders2.webp";
+const bannerImage = "/assets/img/gallery/join-merchant.png";
 
 // components
 import LayoutContainer from "@/components/LayoutContainer";
@@ -23,9 +22,7 @@ const Page = () => {
   const t = useTranslations();
   const language = useLocale();
 
-  const [bgSRC] = useState<string>(
-    Math.random() < 0.5 ? imageRider1 : imageRider2
-  );
+  const [bgSRC] = useState<string>(bannerImage);
 
   // file upload form
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -55,13 +52,13 @@ const Page = () => {
               <div className="flex items-center justify-center h-full">
                 <div className="text-white">
                   <Title className="mb-6 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
-                    {t("pages.workWithUs.title")}
+                    {t("pages.workWithUs.titleAsMerchant")}
                   </Title>
                   <Dialog>
                     <DialogTrigger className="focus:outline-none bg-primary hover:bg-secondary focus:ring-0 font-semibold text-xl py-3 px-4 mr-2 mb-2 w-52 md:w-60 text-white rounded-md">
                       {t("pages.workWithUs.button")}
                     </DialogTrigger>
-                    <DialogContent>
+                    {/* <DialogContent>
                       <div className="mt-5">
                         <ApplicationForm
                           isDragging={isDragging}
@@ -71,7 +68,7 @@ const Page = () => {
                           sendResumeFunction={sendResumeFunction}
                         />
                       </div>
-                    </DialogContent>
+                    </DialogContent> */}
                   </Dialog>
                 </div>
               </div>
@@ -93,7 +90,7 @@ const Page = () => {
                 </div>
               </div>
               <div className="px-2">
-                {faq.map((faq) => {
+                {/* {faq.map((faq) => {
                   const languageMap: {
                     [key: string]: { question: string; answer: string };
                   } = {
@@ -113,7 +110,7 @@ const Page = () => {
                       />
                     </Fragment>
                   );
-                })}
+                })} */}
               </div>
             </div>
           </main>

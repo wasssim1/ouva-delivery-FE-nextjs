@@ -1,6 +1,5 @@
 "use client";
 
-import { RootState } from "@/redux/store";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-amazing-hooks";
 import { FaUser } from "react-icons/fa";
-import { useSelector } from "react-redux";
 
 // components
 import Hamburger from "@/components/navbar/Hamburger";
@@ -19,7 +17,6 @@ import SelectLanguage from "@/components/SelectLanguage";
 const FILL_COLOR = "#E5212F";
 
 const Navbar = () => {
-  const cart = useSelector((state: RootState) => state.cart);
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const t = useTranslations();
@@ -31,24 +28,6 @@ const Navbar = () => {
   const navigateFunction = (value: string) => {
     router.push(`/${language}/${value}`);
   };
-
-  // function to calculate the total number of items in all carts
-  const calculateTotalItems = () => {
-    let totalItems = 0;
-
-    // iterate over each cart
-    cart.forEach((cartItem) => {
-      // iterate over each product in the current cart and add the quantity to the total
-      cartItem.products.forEach((product: any) => {
-        totalItems += product.quantity;
-      });
-    });
-
-    return totalItems;
-  };
-
-  // calculate the total number of items in all carts
-  const totalItems = isMounted ? calculateTotalItems() : 0;
 
   // mobile menu
   const openMobileMenu = () => {
@@ -70,7 +49,7 @@ const Navbar = () => {
             <Image
               src="/assets/img/logo-large-ouva.png"
               className="mr-2"
-              alt="JustEat Logo"
+              alt="Ouva Logo"
               placeholder="empty"
               width={logoSize ?? "auto"}
               height={logoSize ?? "auto"}
@@ -88,11 +67,6 @@ const Navbar = () => {
               onClick={() => navigateFunction("/login")}
             >
               <FaUser fill={FILL_COLOR} size={21} />
-              <span className="hidden sm:inline w-4 text-center">
-                <span className={`${totalItems > 0 ? "" : "invisible"}`}>
-                  {totalItems}
-                </span>
-              </span>
             </div>
             <Hamburger openFunction={openMobileMenu} />
           </div>

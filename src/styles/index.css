@@ -61,21 +61,21 @@ body::-webkit-scrollbar {
   width: 150px;
 }
 
-.jumbotron-justeat-orders,
-.jumbotron-justeat {
+.jumbotron-ouva-orders,
+.jumbotron-ouva {
   height: 350px;
 }
 
 @media (max-width: 600px) {
 
-  .jumbotron-justeat,
-  .jumbotron-justeat-orders {
+  .jumbotron-ouva,
+  .jumbotron-ouva-orders {
     height: 300px;
   }
 }
 
 @media (min-width: 992px) {
-  .jumbotron-justeat {
+  .jumbotron-ouva {
     height: 650px;
   }
 }

@@ -1,8 +1,8 @@
 import { useTranslations } from "next-intl";
+import { MdFastfood } from "react-icons/md";
 
 interface ICardsCategory {
   slug: string;
-  title: string;
   imgSRC: string;
   selectedCategory: string;
   setSelectedCuisine: any;
@@ -11,7 +11,6 @@ interface ICardsCategory {
 
 const CardsCategory: React.FC<ICardsCategory> = ({
   slug,
-  title,
   imgSRC,
   selectedCategory,
   setSelectedCuisine,
@@ -40,18 +39,19 @@ const CardsCategory: React.FC<ICardsCategory> = ({
         src={`/${imgSRC}`}
         alt={title}
         title={title}
-        width={130}
-        height={130}
+        width={70}
+        height={70}
         className="cursor-pointer rounded-xl hover:opacity-80 px-1"
         // onClick={selectCuisineFunction}
       /> */}
-      <div className="flex justify-center">
-        <CompIcon className="text-3xl" />
+      <div className="flex justify-center p-3">
+        <MdFastfood size={30} className="text-3xl" />
       </div>
-      <p className="font-bold text-sm" title={title}>
-        {t(`cuisines.` + title)
-          .charAt(0)
-          .toUpperCase() + t(`cuisines.` + title).slice(1)}
+      <p
+        className="font-bold text-sm capitalize"
+        title={t(`foodCategories.${slug}`)}
+      >
+        {t(`foodCategories.${slug}`)}
       </p>
     </div>
   );

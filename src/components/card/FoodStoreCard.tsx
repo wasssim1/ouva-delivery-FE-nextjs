@@ -1,4 +1,4 @@
-import { FoodStore } from "@/interfaces/foodStore.interface";
+import { FoodStore } from "@/interfaces/food-store.interface";
 import { defaultCurrency } from "@/settings/const";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";

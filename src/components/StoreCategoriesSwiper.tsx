@@ -4,9 +4,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/free-mode";
 
-import { StoreCategory } from "@/interfaces/foodStore.interface";
+import { StoreCategory } from "@/interfaces/food-store.interface";
 
-import CardsCategory from "./card/CardsCategory";
+import CardsCategory from "./card/FoodCategoryCard";
 
 interface StoreCategoriesSwiperProps {
   categories: StoreCategory[];

@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
-import { FoodStore } from "@/interfaces/foodStore.interface";
+import { FoodStore } from "@/interfaces/food-store.interface";
 import { defaultCurrency } from "@/settings/const";
 
 interface BannerRestaurantProps {
@@ -11,13 +11,11 @@ interface BannerRestaurantProps {
 const BannerRestaurant = ({ selectedStore }: BannerRestaurantProps) => {
   const t = useTranslations();
 
-  const { street, postalCode, city } = selectedStore.address;
-  const { freeShipping, shippingCost, minOrder } = selectedStore.shipping;
-  console.log(selectedStore);
+  const { isFreeShipping, cost, minOrder } = selectedStore.shippingCost;
 
   return (
     <div
-      className={`flex justify-center py-20 mx-auto bg-primary bg-[url('/assets/img/ristoranti/${selectedStore.category}/${selectedStore.image}')]`}
+      className={`flex justify-center py-20 mx-auto bg-primary bg-[url('/assets/img/ouva-banner-yellow.png')] bg-cover bg-center`}
     >
       {selectedStore ? (
         <div className="w-full max-w-screen-lg text-white text-center">
@@ -36,14 +34,12 @@ const BannerRestaurant = ({ selectedStore }: BannerRestaurantProps) => {
           <div className="mx-auto text-center leading-6">
             <div className="flex justify-center items-center space-x-1">
               <FaMapMarkerAlt className="inline" />
-              <p>
-                {street} - {postalCode}, {city}
-              </p>
+              <p>{selectedStore.address}</p>
             </div>
             <p className="text-sm italic">
-              {freeShipping
+              {isFreeShipping
                 ? t("common.freeDelivery")
-                : `${shippingCost} ${t("currencies." + defaultCurrency)} ${t(
+                : `${cost} ${t("currencies." + defaultCurrency)} ${t(
                     "common.delivery"
                   )}`}
               ,
