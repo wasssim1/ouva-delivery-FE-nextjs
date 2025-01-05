@@ -10,11 +10,13 @@ import CardsCategory from "./card/FoodCategoryCard";
 
 interface StoreCategoriesSwiperProps {
   categories: StoreCategory[];
+  selectedCategory: string;
   setSelectedCategory: () => void;
 }
 
 export function StoreCategoriesSwiper({
   categories,
+  selectedCategory,
   setSelectedCategory,
 }: StoreCategoriesSwiperProps) {
   return (
@@ -27,17 +29,18 @@ export function StoreCategoriesSwiper({
         modules={[FreeMode]}
         onSlideChange={() => console.log("slide change")}
       >
-        {categories.map(({ image, CompIcon, name }, idx) => (
+        {categories.map(({ slug, image, CompIcon }, idx) => (
           <SwiperSlide
             key={"card-food-category_KEY_" + idx}
             className="flex justify-center !w-auto"
           >
-            {/* <CardsCategory
+            <CardsCategory
+              slug={slug}
               imgSRC={image}
               CompIcon={CompIcon}
-              title={name}
+              selectedCategory={selectedCategory}
               setSelectedCuisine={setSelectedCategory}
-            /> */}
+            />
             <div>hello swiper</div>
           </SwiperSlide>
         ))}

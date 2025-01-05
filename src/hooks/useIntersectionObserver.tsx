@@ -15,6 +15,7 @@ export function useIntersectionObserver(
           const id = Object.keys(refs).find(
             (key) => refs[key].current === entry.target
           );
+
           if (id) setActiveId(id);
         }
       });

@@ -44,12 +44,12 @@ export function ZonePageInteractiveWrapper({
   const isAtLeast900 = useMediaQuery({ min: 900 });
 
   // at page load, set focus on the search field
-  const focusInputFunction = useCallback(() => {
-    if (!isAtLeastTablet) return; // .. blocks the focus on mobile devices for better UX
-    if (!inputRef.current) return;
+  // const focusInputFunction = useCallback(() => {
+  //   if (!isAtLeastTablet) return; // .. blocks the focus on mobile devices for better UX
+  //   if (!inputRef.current) return;
 
-    inputRef.current.focus();
-  }, [isAtLeastTablet]);
+  //   inputRef.current.focus();
+  // }, [isAtLeastTablet]);
 
   // function to handle restaurant cards
   const renderRestaurantCards = () => {
@@ -96,7 +96,7 @@ export function ZonePageInteractiveWrapper({
 
   return (
     <>
-      <div onLoad={focusInputFunction}>
+      <div /* onLoad={focusInputFunction} */>
         <Header bgSRC={"/assets/img/ouva-banner-yellow.png"} bgHeight="small" className="items-center">
           <div className="flex justify-center items-center mt-10 select-none">
             <FaSearchLocation className="mx-2 text-2xl text-primary" />

@@ -65,3 +65,5 @@ const Page = ({ params }: { params: { slug: string } }) => {
 };
 
 export default Page;
+
+export const dynamic = "force-dynamic"

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { createRef, useEffect, useState } from "react";
 
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { BasketItem, BasketState } from "@/interfaces/basket.interface";
@@ -23,6 +23,11 @@ export function StorePageInteractiveWrapper({
   storeData,
 }: StorePageInteractiveWrapperProps) {
   const t = useTranslations();
+
+  const [sectionRefs, setSectionRefs] = useState<{
+    [key: string]: React.RefObject<HTMLDivElement>;
+  }>({});
+
   const [isMenuItemDialogOpen, setIsMenuItemDialogOpen] = useState(false);
   const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(
     null
@@ -56,8 +61,34 @@ export function StorePageInteractiveWrapper({
     }
   };
 
+  const handleSectionsRefs = () => {
+    const _refs = storeData.menuSections.reduce((acc, section) => {
+      return {
+        ...acc,
+        [section.sectionSlug]: createRef(),
+      };
+    }, {});
+    setSectionRefs(_refs);
+  };
+  const activeMenuSection = useIntersectionObserver(sectionRefs);
+  // Handle category click
+  const handleSectionClick = (sectionSlug: string) => {
+    const section = sectionRefs[sectionSlug].current;
+    if (section) {
+      const headerOffset = 120; // Adjust based on your header height
+      const sectionPosition = section.getBoundingClientRect().top;
+      const offsetPosition = sectionPosition + window.scrollY - headerOffset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  };
+
   // load from localstorage per store
   useEffect(() => {
+    handleSectionsRefs();
+
     const storedBasketData = localStorage.getItem(
       `${storeData.slug}-basket-state`
     );
@@ -97,34 +128,6 @@ export function StorePageInteractiveWrapper({
     setSelectedMenuItem(itemTakenFromMenuItemsCard);
     setIsMenuItemDialogOpen(true);
   };
-
-  /* BEGIN - Handle sticky foodSections swiper */
-  // Create refs for each category section
-  const sectionRefs: { [key: string]: React.RefObject<HTMLDivElement> } =
-    storeData.menuSections.reduce((acc, section) => {
-      return {
-        ...acc,
-        [section.sectionSlug]: useRef<HTMLDivElement>(null),
-      };
-    }, {});
-
-  // Use the intersection observer hook to track which section is in view
-  const activeMenuSection = useIntersectionObserver(sectionRefs);
-
-  // Handle category click
-  const handleSectionClick = (sectionSlug: string) => {
-    const section = sectionRefs[sectionSlug].current;
-    if (section) {
-      const headerOffset = 120; // Adjust based on your header height
-      const sectionPosition = section.getBoundingClientRect().top;
-      const offsetPosition = sectionPosition + window.scrollY - headerOffset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
-  };
-  /* END - Handle sticky foodSections swiper */
 
   return (
     <>

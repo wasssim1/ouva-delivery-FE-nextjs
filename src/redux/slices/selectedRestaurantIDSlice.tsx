@@ -1,18 +1,18 @@
-import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
+import { createSlice } from "@reduxjs/toolkit";
 
 // selector that takes the selected id and returns the corresponding restaurant object
 export const selectSelectedRestaurant =
   (idSelected: string) => (state: RootState) => {
-    const ristoranti = state.ristoranti;
-    const allRistoranti = Object.values(ristoranti).flat();
+    const foodStores = state.foodStores;
+    const allFoodStores = Object.values(foodStores).flat();
 
-    const selectedRistorante = allRistoranti.find(
-      (ristorante) => ristorante.id === idSelected
+    const selectedFoodStore = allFoodStores.find(
+      (store) => store.id === idSelected
     );
 
-    if (selectedRistorante) {
-      return selectedRistorante;
+    if (selectedFoodStore) {
+      return selectedFoodStore;
     } else {
       window.location.href = "/orders";
       return null;

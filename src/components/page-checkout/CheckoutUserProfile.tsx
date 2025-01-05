@@ -34,7 +34,6 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
     userInfo as unknown as FieldsState
   );
 
-  // const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 
   const clearBasketStorage = () => {
     localStorage.removeItem(`${basketData.foodStore.slug}-basket-state`);

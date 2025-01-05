@@ -79,7 +79,7 @@ export function ListPaginationControl({
 
   return (
     <>
-      {isPaginationVisible &&
+      {/* {isPaginationVisible &&
       filterLocali(localiFiltrati).length > itemsPerPage ? (
         <div className="flex justify-between mt-8">
           <div>
@@ -141,7 +141,7 @@ export function ListPaginationControl({
             </div>
           )}
         </div>
-      ) : null}
+      ) : null} */}
     </>
   );
 }

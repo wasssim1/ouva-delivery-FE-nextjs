@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 
 // slices
-import ristorantiSlice from '@/redux/slices/ristorantiSlice';
+import foodStoresSlice from '@/redux/slices/foodStoreSlice';
 import cuisineSlice from '@/redux/slices/cuisineSlice';
 import selectedRestaurantIDSlice from '@/redux/slices/selectedRestaurantIDSlice';
 import cartSlice from '@/redux/slices/cartSlice';
@@ -12,7 +12,7 @@ export type AppDispatch = typeof store.dispatch;
 
 const store = configureStore({
   reducer: {
-    ristoranti: ristorantiSlice,
+    foodStores: foodStoresSlice,
     cuisine: cuisineSlice,
     selectedRestaurantID: selectedRestaurantIDSlice,
     cart: cartSlice,

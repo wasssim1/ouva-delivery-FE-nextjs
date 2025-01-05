@@ -1,5 +1,3 @@
-import { RestaurantOrder } from "@/interfaces/const";
-import { CartState } from "@/redux/slices/cartSlice";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export const getCurrentYear = () => {
@@ -76,7 +74,7 @@ export const formatCurrency = (amount: number, currency = "EUR") => {
 };
 
 // function that returns the quantity of a specific product as a number
-export const getProductQuantity = (cart: CartState) => {
+/* export const getProductQuantity = (cart: CartState) => {
   return (productName: string, restaurantId: string): number => {
     // find the restaurant specified in the cart
     const restaurantOrder = cart.orderItems.find(
@@ -101,10 +99,10 @@ export const getProductQuantity = (cart: CartState) => {
     // return the quantity of the product
     return product.quantity;
   };
-};
+}; */
 
 // calculate the total price of the items in the cart, including delivery costs
-export const calculateCartTotal = (cart: RestaurantOrder[]) => {
+/* export const calculateCartTotal = (cart: RestaurantOrder[]) => {
   let totalPrice = 0;
 
   cart.forEach((restaurant: RestaurantOrder) => {
@@ -120,9 +118,9 @@ export const calculateCartTotal = (cart: RestaurantOrder[]) => {
     style: "currency",
     currency: "EUR",
   }); // output => 18.20€
-};
+}; */
 
-export const calculateCartTotalRaw = (cart: RestaurantOrder[]) => {
+/* export const calculateCartTotalRaw = (cart: RestaurantOrder[]) => {
   let totalPrice = 0;
 
   cart.forEach((restaurant: RestaurantOrder) => {
@@ -135,10 +133,10 @@ export const calculateCartTotalRaw = (cart: RestaurantOrder[]) => {
   });
 
   return parseFloat(totalPrice.toFixed(2)); // output => 18.20
-};
+}; */
 
 // calculate the total price of products in a restaurant's cart
-export const calculateRestaurantTotal = (cartItem: RestaurantOrder) => {
+/* export const calculateRestaurantTotal = (cartItem: RestaurantOrder) => {
   const productTotal = cartItem.products.reduce((total, product) => {
     return total + product.price * product.quantity;
   }, 0);
@@ -146,4 +144,4 @@ export const calculateRestaurantTotal = (cartItem: RestaurantOrder) => {
   const shippingCost = cartItem.restaurant.shippingCost.shippingCost || 0;
 
   return productTotal + shippingCost;
-};
+}; */
