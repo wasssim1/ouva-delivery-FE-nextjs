@@ -1,31 +1,38 @@
 import { useEffect, useState } from "react";
 
 import { BasketState } from "@/interfaces/basket.interface";
+import { FoodStore } from "@/interfaces/food-store.interface";
 import { calculateBasketTotalPriceWithDelivery } from "@/lib/utils";
 
 // custom hook to check eligibility for delivery
-const useCheckDeliveryEligibility = (basket: BasketState) => {
+const useCheckDeliveryEligibility = (
+  basket: BasketState,
+  storeInfo: FoodStore
+) => {
   const [isEligible, setIsEligible] = useState(true);
 
   useEffect(() => {
-    if (!basket?.orderItems?.length) {
+    if (!basket?.basketItems?.length) {
       setIsEligible(false);
       return;
     }
 
-    if (!basket.foodStore.shippingCost) {
+    if (!storeInfo?.shippingCost) {
       setIsEligible(false);
       return;
     }
 
     if (
-      calculateBasketTotalPriceWithDelivery(basket) < basket.foodStore.shippingCost.minOrder
+      calculateBasketTotalPriceWithDelivery(
+        basket,
+        storeInfo.shippingCost.cost
+      ) < storeInfo.shippingCost.minOrder
     ) {
       setIsEligible(false);
       return;
     }
 
-    // if all restaurants meet the condition, set isEligible to true
+    // if order meets the condition, set isEligible to true
     setIsEligible(true);
   }, [basket]);
 

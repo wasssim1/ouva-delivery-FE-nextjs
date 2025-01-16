@@ -18,9 +18,11 @@ export interface UserFormProfile {
   lastname: string;
   email: string;
   phone: string;
-  address: string;
   addressZone: string;
+  street: string;
+  houseNumber: string;
   zip: string;
   city: string;
+  region: string;
   country: string;
 }

@@ -13,12 +13,18 @@ import { updateUserInfo } from "@/redux/slices/userSlice";
 import { RootState } from "@/redux/store";
 
 import { Input } from "@/components/ui/input";
+import { FoodStore } from "@/interfaces/food-store.interface";
+import { PlaceOrderRequestDto } from "@/interfaces/order.interface";
 
 interface CheckoutUserProfileProps {
   basketData: BasketState;
+  storeInfo: FoodStore;
 }
 
-const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
+const CheckoutUserProfile = ({
+  basketData,
+  storeInfo,
+}: CheckoutUserProfileProps) => {
   const t = useTranslations();
   const language = useLocale();
 
@@ -29,18 +35,65 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
   // const parsedTotalCart = calculateCartTotalRaw(cart);
 
   // check delivery eligibility before submitting the form
-  const isEligibleForDelivery = useCheckDeliveryEligibility(basketData);
+  const isEligibleForDelivery = useCheckDeliveryEligibility(
+    basketData,
+    storeInfo
+  );
   const areUserFieldsPopulated = useFieldsPopulated(
     userInfo as unknown as FieldsState
   );
 
+  const clearBasketStorage = () => {};
 
-  const clearBasketStorage = () => {
-    localStorage.removeItem(`${basketData.foodStore.slug}-basket-state`);
+  const placeOrderToApi = async (values: UserFormProfile) => {
+    try {
+      const payload: PlaceOrderRequestDto = {
+        storeSlug: storeInfo.slug,
+        basketStorageKey: basketData.basketStorageKey || "",
+        email: values.email,
+        name: values.name,
+        phone: values.phone,
+        deliveryAddress: {
+          zoneSlug: values.addressZone, // to remove after adjusting geolocator extractor service in BE
+          street: values.street,
+          houseNumber: values.houseNumber,
+          postalCode: values.zip,
+          city: values.city,
+          region: values.city, // TBD
+          country: values.country,
+        },
+      };
+      console.log({ payload });
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_OUVA_API_URL}/orders/place`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+
+      const data = await response.json();
+      if (data.error) {
+        console.error(data.error);
+        throw new Error(data.error);
+      }
+
+      return data;
+    } catch (error) {
+      alert("An error occurred. Please try again.");
+    }
   };
 
   // submit handler
-  const handleSubmit = async (
+  const handleSubmit = (
     values: UserFormProfile,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
   ) => {
@@ -48,28 +101,17 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
       return;
     }
 
-    if (basketData.orderItems.length && isEligibleForDelivery) {
-      try {
-        // const response = await fetch("/api/create-checkout-session", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   // body: JSON.stringify({ amount, language }),
-        // });
-
-        // const data = await response.json();
-        // const stripe = await stripePromise;
-
-        // if (stripe && data.sessionId) {
-        //   await stripe.redirectToCheckout({ sessionId: data.sessionId });
-        // }
-
-        // clearBasketStorage();
-        router.push(`/${language}/checkout/success`);
-      } catch (error) {
-        alert("An error occurred. Please try again.");
-      }
+    if (basketData.basketItems?.length && isEligibleForDelivery) {
+      setTimeout(async () => {
+        const responseData = await placeOrderToApi(values);
+        if (responseData?.orderId) {
+          setSubmitting(false);
+          clearBasketStorage();
+          router.push(
+            `/${language}/checkout/success?order=${responseData.orderId}`
+          );
+        }
+      }, 3000);
     }
   };
 
@@ -156,16 +198,32 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
               <h3 className="mb-5 text-lg">{t("common.deliveryAddress")}</h3>
               <div className="grid gap-4 gap-x-5 sm:grid-cols-2">
                 <Field
-                  name="address"
+                  name="street"
                   render={({ field }: FieldProps) => (
                     <Input
                       type="text"
-                      placeholder={t("common.deliveryAddress")}
+                      placeholder={t("common.street")}
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
                         dispatch(
-                          updateUserInfo({ address: e.currentTarget.value })
+                          updateUserInfo({ street: e.currentTarget.value })
+                        );
+                      }}
+                    />
+                  )}
+                />
+                <Field
+                  name="houseNumber"
+                  render={({ field }: FieldProps) => (
+                    <Input
+                      type="text"
+                      placeholder={t("common.houseNumber")}
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        dispatch(
+                          updateUserInfo({ street: e.currentTarget.value })
                         );
                       }}
                     />
@@ -176,7 +234,7 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
                   render={({ field }: FieldProps) => (
                     <Input
                       type="text"
-                      placeholder="Zip Code"
+                      placeholder="Code Postal"
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
@@ -184,6 +242,18 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
                           updateUserInfo({ zip: e.currentTarget.value })
                         );
                       }}
+                    />
+                  )}
+                />
+                <Field
+                  name="city"
+                  render={({ field }: FieldProps) => (
+                    <Input
+                      type="text"
+                      disabled
+                      className="disabled:cursor-not-allowed"
+                      placeholder={t("common.city")}
+                      {...field}
                     />
                   )}
                 />
@@ -199,18 +269,6 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
                     />
                   )}
                 />
-                {/* <Field
-                  name="city"
-                  render={({ field }: FieldProps) => (
-                    <Input
-                      type="text"
-                      disabled
-                      className="disabled:cursor-not-allowed"
-                      placeholder={t("common.city")}
-                      {...field}
-                    />
-                  )}
-                /> */}
                 <Field
                   name="country"
                   render={({ field }: FieldProps) => (
@@ -227,9 +285,12 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
               <div className="flex justify-center md:justify-end">
                 <button
                   type="submit"
-                  disabled={!(areUserFieldsPopulated && isEligibleForDelivery)}
+                  disabled={
+                    !(areUserFieldsPopulated && isEligibleForDelivery) ||
+                    isSubmitting
+                  }
                   className={`w-full xl:max-w-60 px-6 py-2 mt-5 md:mt-10 font-semibold rounded-md text-sm text-white bg-primary hover:text-primary hover:bg-white ring-1 ring-primary ${
-                    !(areUserFieldsPopulated && isEligibleForDelivery)
+                    !(areUserFieldsPopulated && isEligibleForDelivery) || isSubmitting
                       ? "opacity-50 cursor-not-allowed"
                       : "opacity-100 hover:bg-emerald-700"
                   }`}
