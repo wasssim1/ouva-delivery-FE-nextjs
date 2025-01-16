@@ -11,7 +11,7 @@ interface BannerRestaurantProps {
 const BannerRestaurant = ({ selectedStore }: BannerRestaurantProps) => {
   const t = useTranslations();
 
-  const { isFreeShipping, cost, minOrder } = selectedStore.shippingCost;
+  const { isFreeShipping, cost, minOrder: minOrder } = selectedStore.shippingCost;
 
   return (
     <div
@@ -34,7 +34,7 @@ const BannerRestaurant = ({ selectedStore }: BannerRestaurantProps) => {
           <div className="mx-auto text-center leading-6">
             <div className="flex justify-center items-center space-x-1">
               <FaMapMarkerAlt className="inline" />
-              <p>{selectedStore.address}</p>
+              <p>{selectedStore.address?.addressTxt}</p>
             </div>
             <p className="text-sm italic">
               {isFreeShipping

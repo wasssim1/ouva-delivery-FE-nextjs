@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function toLocaleCurrency(value: number) {
+export function toLocaleCurrency(value?: number) {
   if (!value) return value;
 
   return value.toLocaleString(defaultCurrencyLocale, {
@@ -18,20 +18,21 @@ export function toLocaleCurrency(value: number) {
 }
 
 export function calculateTotalBasketItemsPrice(basketData: BasketState) {
-  if (!basketData.orderItems?.length) {
+  if (!basketData.basketItems?.length) {
     return 0;
   }
 
-  return basketData.orderItems.reduce(
-    (acc, item) => acc + item.finalUnitPrice * item.quantity,
+  return basketData.basketItems.reduce(
+    (acc, item) => acc + item.unitPrice * item.quantity,
     0
   );
 }
 
 export const calculateBasketTotalPriceWithDelivery = (
-  basketData: BasketState
+  basketData: BasketState,
+  storeShippingCost: number
 ) => {
   const itemsPrice = calculateTotalBasketItemsPrice(basketData);
 
-  return itemsPrice + (basketData.foodStore.shippingCost?.cost || 0);
+  return itemsPrice + (storeShippingCost || 0);
 };

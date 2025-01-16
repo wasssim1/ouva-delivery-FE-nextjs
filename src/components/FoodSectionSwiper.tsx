@@ -7,13 +7,13 @@ import { MenuSection } from "@/interfaces/food-store.interface";
 import "swiper/css";
 
 interface CategorySwiperProps {
-  foodSections: MenuSection[];
+  menuSections: MenuSection[];
   activeSection: string;
   onSectionClick: (categoryId: string) => void;
 }
 
 export function FoodSectionSwiper({
-  foodSections,
+  menuSections,
   activeSection,
   onSectionClick,
 }: CategorySwiperProps) {
@@ -21,7 +21,7 @@ export function FoodSectionSwiper({
 
   // Scroll active category into view when it changes
   const scrollToActiveCategory = (sectionSlug: string) => {
-    const activeIndex = foodSections.findIndex(
+    const activeIndex = menuSections.findIndex(
       (section) => section.sectionSlug === sectionSlug
     );
 
@@ -41,7 +41,7 @@ export function FoodSectionSwiper({
         scrollToActiveCategory(activeSection);
       }}
     >
-      {foodSections.map((section) => (
+      {menuSections?.map((section) => (
         <SwiperSlide key={section.sectionSlug} className="!w-auto">
           <button
             onClick={() => onSectionClick(section.sectionSlug)}

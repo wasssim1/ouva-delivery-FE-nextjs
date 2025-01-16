@@ -38,9 +38,9 @@ export function StoreCategoriesCarousel({
           >
             <CarouselContent>
               {categories.map(({ slug, image, CompIcon }) => (
-                <CarouselItem key={slug} className="px-2 mx-auto basis-1/4">
+                <CarouselItem key={slug} className="px- mx-aut basis-1/4">
                   <div
-                    className={`m-1${
+                    className={`${
                       selectedCategory === slug ? " border-secondary" : ""
                     }`}
                   >

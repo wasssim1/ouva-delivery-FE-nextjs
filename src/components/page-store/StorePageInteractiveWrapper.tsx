@@ -4,12 +4,20 @@ import { useTranslations } from "next-intl";
 import { createRef, useEffect, useState } from "react";
 
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
-import { BasketItem, BasketState } from "@/interfaces/basket.interface";
-import { FoodStore, MenuItem } from "@/interfaces/food-store.interface";
+import { BasketState } from "@/interfaces/basket.interface";
+import {
+  FoodStore,
+  MenuItem,
+  MenuSection,
+} from "@/interfaces/food-store.interface";
 
-import RestaurantCard from "../card/FoodStoreCard";
+import { notFound } from "next/navigation";
+import FoodStoreCard from "../card/FoodStoreCard";
 import { RestaurantMenuItemCard } from "../card/FoodStoreMenuItemCard";
-import { BasketDialog } from "../dialog/BasketDialog";
+import {
+  BasketDialog,
+  getStoreBasketFromLocalStorage,
+} from "../dialog/BasketDialog";
 import { FoodMenuItemDialog } from "../dialog/FoodMenuItemDialog";
 import { FoodSectionSwiper } from "../FoodSectionSwiper";
 import { SearchBar } from "../ui/search-bar";
@@ -17,13 +25,18 @@ import { StickyBasketButton } from "./StickyBasketButton";
 
 interface StorePageInteractiveWrapperProps {
   storeData: FoodStore;
+  menuItemsPerStore: MenuItem[];
 }
 
 export function StorePageInteractiveWrapper({
   storeData,
+  menuItemsPerStore,
 }: StorePageInteractiveWrapperProps) {
+  if (!storeData || !menuItemsPerStore?.length) notFound();
+
   const t = useTranslations();
 
+  const [menuSections, setMenuSections] = useState<MenuSection[]>([]);
   const [sectionRefs, setSectionRefs] = useState<{
     [key: string]: React.RefObject<HTMLDivElement>;
   }>({});
@@ -32,48 +45,54 @@ export function StorePageInteractiveWrapper({
   const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(
     null
   );
-  const [selectedBasketItemToEditKey, setSelectedBasketItemToEditKey] =
-    useState<string | null>(null);
 
   const [isCartDialogOpen, setIsCartDialogOpen] = useState(false);
   const [basketData, setBasketData] = useState<BasketState>({
-    foodStore: storeData,
-    orderItems: [],
+    foodStoreSlug: storeData.slug,
+    basketItems: [],
+    totalPrice: 0,
   });
-  const onEditBasketItemClick = (itemToEdit: BasketItem) => {
-    setSelectedMenuItem(itemToEdit.itemDetails);
-    setSelectedBasketItemToEditKey(itemToEdit.basketItemKey);
-    setIsMenuItemDialogOpen(true);
-  };
-  const onRemoveBasketItemClick = (removedItem: BasketItem) => {
-    const newBasketData = { ...basketData };
-    newBasketData.orderItems = newBasketData.orderItems.filter(
-      (item) => item.basketItemKey !== removedItem.basketItemKey
-    );
-    setBasketData(newBasketData);
-    localStorage.setItem(
-      `${storeData.slug}-basket-state`,
-      JSON.stringify(newBasketData)
-    );
 
-    if (newBasketData.orderItems.length === 0) {
-      setIsCartDialogOpen(false);
-    }
+  // const onEditBasketItemClick = async (itemToEdit: BasketItem) => {
+  //   const resp = await fetch(
+  //     `http://localhost:8080/baskets/${itemToEdit.basketItemKey}`
+  //   );
+  //   const basketData = await resp.json();
+  //   setSelectedMenuItem(itemToEdit.menuItemInfo);
+
+  //   setSelectedBasketItemToEditKey(itemToEdit.basketItemKey);
+  //   setIsMenuItemDialogOpen(true);
+  // };
+
+  const onRemoveBasketItemClick = (removedBasketItemKey: string) => {
+    //   const newBasketData = { ...basketData };
+    //   newBasketData.orderItems = newBasketData.orderItems.filter(
+    //     (item) => item.basketItemKey !== removedItem.basketItemKey
+    //   );
+    //   setBasketData(newBasketData);
+    //   localStorage.setItem(
+    //     `${storeData.slug}-basket-state`,
+    //     JSON.stringify(newBasketData)
+    //   );
+    //   if (newBasketData.orderItems.length === 0) {
+    //     setIsCartDialogOpen(false);
+    //   }
   };
 
   const handleSectionsRefs = () => {
-    const _refs = storeData.menuSections.reduce((acc, section) => {
+    const _refs = menuSections.reduce((acc, section) => {
       return {
         ...acc,
         [section.sectionSlug]: createRef(),
       };
     }, {});
+
     setSectionRefs(_refs);
   };
   const activeMenuSection = useIntersectionObserver(sectionRefs);
   // Handle category click
   const handleSectionClick = (sectionSlug: string) => {
-    const section = sectionRefs[sectionSlug].current;
+    const section = sectionRefs[sectionSlug]?.current;
     if (section) {
       const headerOffset = 120; // Adjust based on your header height
       const sectionPosition = section.getBoundingClientRect().top;
@@ -87,16 +106,20 @@ export function StorePageInteractiveWrapper({
 
   // load from localstorage per store
   useEffect(() => {
-    handleSectionsRefs();
+    const menuSections = groupByMenuSection(menuItemsPerStore);
+    setMenuSections(menuSections);
 
-    const storedBasketData = localStorage.getItem(
-      `${storeData.slug}-basket-state`
-    );
-    if (storedBasketData) {
-      const parsedBasketStateData: BasketState = JSON.parse(storedBasketData);
-      setBasketData(parsedBasketStateData);
-    }
+    const fetchBasketData = async () => {
+      const basketDataResp = await fetchBasketDataFromApi(storeData.slug);
+      if (basketDataResp) setBasketData(basketDataResp);
+    };
+
+    fetchBasketData();
   }, [storeData]);
+
+  useEffect(() => {
+    handleSectionsRefs();
+  }, [menuSections]);
 
   // food search bar
   // const [filteredIMenuItemsList, setFilteredMenuItemsList] = useState(selectedFoodStore.menu);
@@ -132,9 +155,8 @@ export function StorePageInteractiveWrapper({
   return (
     <>
       <div>
-        {/* <BannerRestaurant selectedStore={selectedRestaurant} /> */}
         <div className="container w-full">
-          <RestaurantCard foodStore={storeData} />
+          <FoodStoreCard foodStore={storeData} isFullWidthImg={true} />
         </div>
 
         {/* Restaurant food sections swiper and searchbar */}
@@ -153,7 +175,7 @@ export function StorePageInteractiveWrapper({
             {/* Food sections swiper */}
             <div className="mt-4 -mx-4 px-4 overflow-hidden">
               <FoodSectionSwiper
-                foodSections={storeData.menuSections}
+                menuSections={menuSections}
                 activeSection={activeMenuSection}
                 onSectionClick={handleSectionClick}
               />
@@ -163,7 +185,7 @@ export function StorePageInteractiveWrapper({
 
         {/* Restaurant menu items list per category */}
         <div className="container mx-auto pt-8">
-          {storeData.menuSections.map((menuSection) => (
+          {menuSections.map((menuSection) => (
             <div
               key={`menu-section_KEY_${menuSection.sectionSlug}`}
               ref={sectionRefs[menuSection.sectionSlug]}
@@ -173,7 +195,7 @@ export function StorePageInteractiveWrapper({
                 {menuSection.sectionTitle}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {menuSection.menuItems.map(
+                {menuSection.menuItems?.map(
                   (item: MenuItem, dishIdx: number) => (
                     <RestaurantMenuItemCard
                       key={"card-restaurant-menuitem_KEY_" + dishIdx}
@@ -204,21 +226,74 @@ export function StorePageInteractiveWrapper({
           foodMenuItem={selectedMenuItem}
           basketData={basketData}
           setBasketData={setBasketData}
-          selectedBasketItemToEditKey={selectedBasketItemToEditKey}
-          setSelectedBasketItemToEditKey={setSelectedBasketItemToEditKey}
         />
       )}
 
       {/* Cart Modal Mobile mode */}
       {!!isCartDialogOpen && (
         <BasketDialog
+          storeMenuItems={menuItemsPerStore}
+          storeMinOrderAmount={storeData?.shippingCost?.minOrder}
           basketData={basketData}
+          setBasketData={setBasketData}
           isOpen={isCartDialogOpen}
           setIsOpen={setIsCartDialogOpen}
-          editItem={onEditBasketItemClick}
           removeItemFromBasket={onRemoveBasketItemClick}
         />
       )}
     </>
   );
+}
+
+export async function fetchBasketDataFromApi(
+  storeSlug: string
+): Promise<BasketState | undefined> {
+  const allBasketsStorage = getStoreBasketFromLocalStorage();
+  if (allBasketsStorage && allBasketsStorage[storeSlug]) {
+    const basketStorageKey = allBasketsStorage[storeSlug].basketStorageKey;
+    if (!basketStorageKey) return;
+
+    const basketData = await fetch(
+      `${process.env.NEXT_PUBLIC_OUVA_API_URL}/baskets/${basketStorageKey}`
+    );
+    if (!basketData.ok) {
+      console.error("Error fetching basket data");
+      return;
+    }
+    const basketDataJson: BasketState = await basketData.json();
+    return basketDataJson;
+  }
+}
+
+function groupByMenuSection(menuItems: any[]) {
+  return menuItems.reduce((sections: any[], menuItem) => {
+    const sectionSlug = menuItem.menuSection.slug;
+    const sectionTitle = menuItem.menuSection.name;
+
+    // Check if the section already exists
+    let section = sections.find((sec) => sec.sectionSlug === sectionSlug);
+
+    if (!section) {
+      // If the section doesn't exist, create and add it
+      section = { sectionSlug, sectionTitle, menuItems: [] };
+      sections.push(section);
+    }
+
+    if (!section.menuItems) section.menuItems = [];
+
+    // Add the current menu item to the section's items
+    section.menuItems.push({
+      slug: menuItem.slug,
+      name: menuItem.name,
+      description: menuItem.description,
+      basePrice: menuItem.basePrice,
+      maxOrderCount: menuItem.maxPerOrder,
+      ingredients: menuItem.ingredients,
+      options: menuItem.menuOptions,
+      extras: menuItem.extras,
+      imageUrl: menuItem.imageUrl,
+    });
+
+    return sections;
+  }, []);
 }

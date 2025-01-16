@@ -17,12 +17,12 @@ export function StickyBasketButton({
 
   // const cart = useSelector((state: RootState) => state.cart);
 
-  if (!basketData.orderItems?.length) {
+  if (!basketData?.basketItems?.length) {
     return null;
   }
 
   const calculateItemsCount = () => {
-    return basketData.orderItems.reduce((acc, item) => acc + item.quantity, 0);
+    return basketData.basketItems.reduce((acc, item) => acc + item.quantity, 0);
   };
 
   return (
@@ -34,7 +34,7 @@ export function StickyBasketButton({
         <div className="flex">
           <FaShoppingBasket size={24} />
           <span className="absolute top-1 left-7 px-2 text-xs ring-1 ring-primary bg-secondary rounded-full">
-            {basketData.orderItems?.length && (
+            {basketData.basketItems?.length && (
               <small className="">{calculateItemsCount()}</small>
             )}
           </span>

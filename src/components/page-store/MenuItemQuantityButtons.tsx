@@ -6,7 +6,7 @@ interface BasketItemQuantityButtonsProps {
   maxQuantityCount?: number;
 }
 
-export function BasketItemQuantityButtons({
+export function MenuItemQuantityButtons({
   quantity,
   updateSelectionQte,
   maxQuantityCount,

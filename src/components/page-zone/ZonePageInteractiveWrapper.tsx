@@ -1,14 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "react-amazing-hooks";
 import { FaSearchLocation } from "react-icons/fa";
 
 import { FoodStore, StoreCategory } from "@/interfaces/food-store.interface";
 import { Zone } from "@/interfaces/zone.interface";
 
-import RestaurantCard from "../card/FoodStoreCard";
+import FoodStoreCard from "../card/FoodStoreCard";
 import FloatingButton from "../FloatingButton";
 import Header from "../Header";
 import { StoreCategoriesCarousel } from "../StoreCategoriesCarousel";
@@ -53,11 +53,21 @@ export function ZonePageInteractiveWrapper({
 
   // function to handle restaurant cards
   const renderRestaurantCards = () => {
+    if (!storesListData?.length) {
+      return (
+        <div className="flex flex-col items-center justify-center m-10">
+          <h1 className="xs:text-md md:text-xl font-bold text-secondary">
+            {t("pages.zone.noStoresFound")}
+          </h1>
+        </div>
+      );
+    }
+
     if (!filteredStoresList?.length) {
       return (
         <div className="flex flex-col items-center justify-center m-10">
-          <h1 className="md:text-2xl font-bold text-secondary">
-            {t("pages.zone.noStoresFound")}
+          <h1 className="xs:text-md md:text-lg font-bol">
+            {`${t("pages.zone.noFilteredStoresFoundForCategory")}`}
           </h1>
         </div>
       );
@@ -71,7 +81,7 @@ export function ZonePageInteractiveWrapper({
         key={`restaurant_container_search_${searchText}`}
       >
         {filteredStoresList.map((foodStore: FoodStore) => (
-          <RestaurantCard
+          <FoodStoreCard
             key={`food-store-card_KEY_${foodStore.slug}`}
             foodStore={foodStore}
           />
@@ -97,7 +107,11 @@ export function ZonePageInteractiveWrapper({
   return (
     <>
       <div /* onLoad={focusInputFunction} */>
-        <Header bgSRC={"/assets/img/ouva-banner-yellow.png"} bgHeight="small" className="items-center">
+        <Header
+          bgSRC={"/assets/img/ouva-banner-yellow.png"}
+          bgHeight="small"
+          className="items-center"
+        >
           <div className="flex justify-center items-center mt-10 select-none">
             <FaSearchLocation className="mx-2 text-2xl text-primary" />
             <h3 className="text-2xl font-bold text-primary">{zoneData.name}</h3>
