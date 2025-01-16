@@ -43,7 +43,6 @@ const Page = () => {
             ).then((res) => res.json());
 
           if (!basketSummaryData?.basketStorageKey) return;
-          console.log({ basketSummaryData });
           const { storeInfo: _storeInfo, ...rest } = basketSummaryData;
           setBasketData({ ...rest });
           setStoreInfo(_storeInfo);
@@ -64,7 +63,10 @@ const Page = () => {
           >
             <CheckoutBasket basketData={basketData} storeInfo={storeInfo} />
             <Suspense fallback={null}>
-              <CheckoutUserProfile basketData={basketData} storeInfo={storeInfo} />
+              <CheckoutUserProfile
+                basketData={basketData}
+                storeInfo={storeInfo}
+              />
             </Suspense>
           </div>
         </div>

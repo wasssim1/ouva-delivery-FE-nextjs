@@ -61,13 +61,13 @@ const Page = async ({ params }: { params: { slug: string } }) => {
   }
 
   const storesListDataResp = await fetch(
-    `${process.env.NEXT_PUBLIC_OUVA_API_URL}/food-stores?zone=${params.slug}`
+    `${process.env.NEXT_PUBLIC_OUVA_API_URL}/food-stores/find?zone=${params.slug}`
   )
     .then((res) => res.json())
     .catch((err) => {
       console.error("Error fetching stores data - slug", { err });
     });
-  const availableStoresListData = storesListDataResp.ouvaStores;
+  const availableStoresListData = storesListDataResp.foundStores || [];
 
   const categoriesIdsSet = new Set();
   availableStoresListData.forEach((store: FoodStore) => {

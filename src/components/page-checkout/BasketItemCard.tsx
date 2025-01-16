@@ -1,5 +1,4 @@
 import { BasketItem } from "@/interfaces/basket.interface";
-import { toLocaleCurrency } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { Dispatch as ReactDispatch, SetStateAction } from "react";
 import { IoAddCircleOutline, IoRemoveCircleOutline } from "react-icons/io5";
@@ -75,10 +74,10 @@ const BasketItemCard: React.FC<CartItemProps> = ({
       >
         <span className="w-8/12 col-span-7">
           <b>x{basketItem.quantity}</b>
-          <span className="pl-2">{basketItem.itemDetails.name}</span>
+          {/* <span className="pl-2">{basketItem.itemDetails.name}</span> */}
         </span>
         <span className="flex justify-end w-1/12 col-span-2 italic">
-          {toLocaleCurrency(basketItem.finalUnitPrice)}
+          {/* {toLocaleCurrency(basketItem.finalUnitPrice)} */}
         </span>
       </li>
 
@@ -95,10 +94,10 @@ const BasketItemCard: React.FC<CartItemProps> = ({
             <DialogContent title={t("common.close")}>
               <div className="flex items-center justify-between w-full mt-5">
                 <DialogTitle className="text-lg font-semibold">
-                  {selectedItemToEdit.itemDetails.name}
+                  {/* {selectedItemToEdit.itemDetails.name} */}
                 </DialogTitle>
                 <DialogDescription className="text-lg text-black italic pr-2.5 select-none">
-                  <span>{toLocaleCurrency(selectedItemToEdit.finalUnitPrice)}</span>
+                  {/* <span>{toLocaleCurrency(selectedItemToEdit.finalUnitPrice)}</span> */}
                 </DialogDescription>
               </div>
               <DialogFooter>

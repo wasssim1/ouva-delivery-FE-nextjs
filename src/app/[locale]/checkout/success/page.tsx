@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { notFound, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -13,6 +13,7 @@ import Link from "next/link";
 const Page = () => {
   const params = useSearchParams();
   const t = useTranslations();
+  const language = useLocale();
 
   const [orderId, setOrderId] = useState<string | null>(null);
 
@@ -51,7 +52,7 @@ const Page = () => {
             {t("pages.orderPlaced.trackOrder")}{" "}
             <Link
               className="text-primary hover:text-secondary"
-              href={`/track-order?id=${orderId}`}
+              href={`/${language}/track-order?id=${orderId}`}
             >
               {orderId}
             </Link>

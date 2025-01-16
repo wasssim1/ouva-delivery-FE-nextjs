@@ -67,6 +67,7 @@
       "noStoresFound": "Aucun restaurant trouvé dans cette zone",
       "noFilteredStoresFoundForCategory": "Aucun restaurant trouvé dans cette zone pour cette catégorie"
     },
+    "checkout": {},
     "login": {}
   },
   "components": {
@@ -102,10 +103,21 @@
     "cartUserProfile": {
       "title": "Complétez votre commande",
       "yourInfo": "Vos informations personnelles",
-      "yourName": "Votre nom",
-      "yourLastName": "Votre prénom",
-      "yourEmail": "Votre email",
-      "yourPhoneNumber": "Numéro de téléphone"
+      "name": "Votre nom",
+      "lastName": "Votre prénom",
+      "email": "Votre email",
+      "phoneNumber": "Numéro de téléphone",
+      "zone": "Votre zone",
+      "street": "Rue",
+      "houseNumber": "Nr.",
+      "address": "Votre adresse",
+      "deliveryAddress": "Adresse de livraison",
+      "city": "Votre ville",
+      "region": "Votre région",
+      "country": "Votre pays",
+      "paymentMethod": "Méthode de paiement",
+      "creditCard": "Carte de crédit",
+      "cashOnDelivery": "Espèces à la livraison"
     },
     "creditCardComponent": {
       "title": "Ajouter un mode de paiement",
@@ -114,6 +126,9 @@
   },
   "common": {
     "hide": "Cacher",
+    "error": "Erreur",
+    "success": "Succès",
+    "tryAgain": "Réessayer plus tard svp!",
     "show": "Afficher",
     "showAll": "Afficher tout",
     "freeDelivery": "Livraison gratuite",

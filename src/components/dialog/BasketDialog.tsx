@@ -288,6 +288,15 @@ export const saveStoreBasketToLocalStorage = (basket: BasketState) => {
   localStorage.setItem(storeStorageKey, JSON.stringify(toStore));
 };
 
-export const clearLocalBasket = (basketKey: string) => {
+export const clearLocalBasketByStorageKey = (basketKey: string) => {
+  const storeStorageKey = `${LOCAL_STORAGE_KEY}`;
+  const allBasketsStorage = getStoreBasketFromLocalStorage();
+  const newBaskets = { ...allBasketsStorage };
+
+  delete newBaskets[basketKey];
+  localStorage.setItem(storeStorageKey, JSON.stringify(newBaskets));
+};
+
+export const clearAllLocalBaskets = () => {
   localStorage.removeItem(`${LOCAL_STORAGE_KEY}`);
 };
