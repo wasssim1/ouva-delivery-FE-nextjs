@@ -9,6 +9,7 @@ interface BasketItemQuantityButtonsProps {
     operationType: "inc" | "dec"
   ) => void;
   onRemoveBasketItem: (basketItem: BasketItem) => void;
+  isRequestPending: boolean;
   maxQuantityCount?: number;
 }
 
@@ -16,6 +17,7 @@ export function BasketQuantityButtons({
   basketItem,
   onUpdateBasketItemQte,
   onRemoveBasketItem,
+  isRequestPending,
   maxQuantityCount,
 }: BasketItemQuantityButtonsProps) {
   return (
@@ -23,6 +25,7 @@ export function BasketQuantityButtons({
       {basketItem.quantity === 1 ? (
         <button
           className="disabled:opacity-50"
+          disabled={isRequestPending}
           onClick={() => onRemoveBasketItem(basketItem)}
         >
           <Trash2Icon className="text-primary hover:text-secondary" size={16} />
@@ -30,7 +33,7 @@ export function BasketQuantityButtons({
       ) : (
         <button
           className="disabled:opacity-50"
-          disabled={basketItem.quantity === 1}
+          disabled={isRequestPending || basketItem.quantity === 1}
           onClick={() => onUpdateBasketItemQte(basketItem, "dec")}
         >
           <IoRemoveCircleOutline
@@ -45,7 +48,8 @@ export function BasketQuantityButtons({
       <button
         className="disabled:opacity-50"
         disabled={
-          !!maxQuantityCount && basketItem.quantity === maxQuantityCount
+          isRequestPending ||
+          (!!maxQuantityCount && basketItem.quantity === maxQuantityCount)
         }
         onClick={() => onUpdateBasketItemQte(basketItem, "inc")}
       >

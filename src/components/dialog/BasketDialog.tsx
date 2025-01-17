@@ -1,6 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 import {
   Dialog,
@@ -36,6 +36,8 @@ export function BasketDialog({
   const language = useLocale();
   const router = useRouter();
 
+  const [isRequestPending, setIsRequestPending] = useState(false);
+
   if (!storeMenuItems?.length) return null;
   if (!basketData?.basketItems || !basketData?.foodStoreSlug) return null;
 
@@ -43,7 +45,7 @@ export function BasketDialog({
     setIsOpen(false);
   };
 
-  const onUpdateBasketItemQuantity = (
+  const onUpdateBasketItemQuantity = async (
     basketItem: BasketItem,
     operation: "inc" | "dec"
   ) => {
@@ -53,6 +55,7 @@ export function BasketDialog({
       fromQuantity: basketItem.quantity,
       operation,
     };
+    setIsRequestPending(true);
     fetch(
       `${process.env.NEXT_PUBLIC_OUVA_API_URL}/baskets/${basketData.basketStorageKey}?item=${basketItem.basketItemKey}`,
       {
@@ -65,6 +68,7 @@ export function BasketDialog({
     )
       .then((resp) => resp.json())
       .then((resp) => {
+        setIsRequestPending(false);
         if (!resp.basketStorageKey) return;
         setBasketData((prev: BasketState) => {
           const _basketState: BasketState = {
@@ -79,12 +83,17 @@ export function BasketDialog({
 
           return _basketState;
         });
+      })
+      .catch((err) => {
+        console.error(err);
+        setIsRequestPending(false);
       });
   };
 
   const removeItemFromBasket = (item: BasketItem) => {
     if (!basketData.basketStorageKey) return;
 
+    setIsRequestPending(true);
     fetch(
       `${process.env.NEXT_PUBLIC_OUVA_API_URL}/baskets/${basketData.basketStorageKey}?item=${item.basketItemKey}`,
       {
@@ -93,6 +102,7 @@ export function BasketDialog({
     )
       .then((resp) => resp.json())
       .then((resp) => {
+        setIsRequestPending(false);
         if (!resp.basketStorageKey) return;
 
         setBasketData((prev: BasketState) => {
@@ -108,10 +118,15 @@ export function BasketDialog({
 
           return _basketState;
         });
+      })
+      .catch((err) => {
+        console.error(err);
+        setIsRequestPending(false);
       });
   };
 
   const toCheckout = () => {
+    if (!isRequestPending) return;
     if (!basketData.basketStorageKey) return;
     setIsOpen(false);
     router.push(`/${language}/checkout?basket=${basketData.basketStorageKey}`);
@@ -217,6 +232,7 @@ export function BasketDialog({
                     basketItem={item}
                     onUpdateBasketItemQte={onUpdateBasketItemQuantity}
                     onRemoveBasketItem={removeItemFromBasket}
+                    isRequestPending={isRequestPending}
                     // maxQuantityCount={foodMenuItem.maxOrderCount}
                   />
                 </div>
@@ -244,6 +260,7 @@ export function BasketDialog({
                 ) : (
                   <button
                     className="bg-primary text-white py-2 px-4 rounded-md hover:text-primary hover:bg-white hover:ring-1 hover:ring-primary"
+                    disabled={isRequestPending}
                     onClick={toCheckout}
                   >
                     {t("common.checkout")}{" "}
