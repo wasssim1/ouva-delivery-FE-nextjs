@@ -6,7 +6,6 @@ import { StoreCategory } from "@/interfaces/food-store.interface";
   - IMPORTANT: after updating `supportedLanguages`, make sure to also update the `matcher` pattern in the `config` object in `src/middleware.ts`. Failure to update the `matcher` pattern will result in routing issues.
 */
 export const supportedLanguages = ["fr", "en"];
-// export const supportedLanguages = ['en', 'it', 'es', 'de', 'fr'];
 export const defaultLanguage = "fr";
 export const defaultFoodCategory = "pizza";
 
