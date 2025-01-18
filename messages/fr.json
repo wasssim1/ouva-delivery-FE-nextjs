@@ -61,11 +61,13 @@
       "productAlreadyInCart": "Produit déjà dans le panier",
       "productNotAvailable": "Produit non disponible",
       "productNotFound": "Produit non trouvé",
-      "productNotAvailableAnymore": "Produit n'est plus disponible"
+      "productNotAvailableAnymore": "Produit n'est plus disponible",
+      "storeNotFound": "Restaurant non trouvé"
     },
     "zone": {
       "noStoresFound": "Aucun restaurant trouvé dans cette zone",
-      "noFilteredStoresFoundForCategory": "Aucun restaurant trouvé dans cette zone pour cette catégorie"
+      "noFilteredStoresFoundForCategory": "Aucun restaurant trouvé dans cette zone pour cette catégorie",
+      "zoneNotFound": "Zone non trouvée"
     },
     "checkout": {},
     "login": {}
@@ -172,7 +174,8 @@
     "addMoreItems": "Ajouter plus d'articles",
     "size": "Taille",
     "spiciness": "Piquant",
-    "extras": "Extras"
+    "extras": "Extras",
+    "returnToHome": "Retour à l'accueil"
   },
   "notifications": {
     "message1": "CV envoyé !",

@@ -34,16 +34,7 @@ const Page = () => {
             {t("common.orderPlaced")}!
           </p>
         </div>
-        <div className="flex justify-center">
-          <Image
-            src={"/assets/img/ouva-order-success.png"}
-            alt="ouva-order-success.png"
-            loading="eager"
-            width={320}
-            height={320}
-            className="w-80 xs:w-96 md:w-[34rem] mx-auto bottom-5"
-          />
-        </div>
+
         <div className="bottom-8 md:bottom-12">
           <p className="tracking-tight text-center text-balance opacity-90 p-1.5 text-sm sm:text-md md:text-base">
             {t("pages.orderPlaced.paragraph")}
@@ -58,6 +49,17 @@ const Page = () => {
             </Link>
             .
           </p>
+        </div>
+
+        <div className="flex justify-center">
+          <Image
+            src={"/assets/img/ouva-order-success.png"}
+            alt="ouva-order-success.png"
+            loading="eager"
+            width={320}
+            height={320}
+            className="w-80 xs:w-96 md:w-[34rem] mx-auto bottom-5"
+          />
         </div>
       </div>
       <Footer />

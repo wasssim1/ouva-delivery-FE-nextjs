@@ -240,7 +240,7 @@ const CheckoutUserProfile = ({
                       onChange={(e) => {
                         field.onChange(e);
                         dispatch(
-                          updateUserInfo({ street: e.currentTarget.value })
+                          updateUserInfo({ houseNumber: e.currentTarget.value })
                         );
                       }}
                     />

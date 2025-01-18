@@ -247,7 +247,8 @@ export function BasketDialog({
                 storeMinOrderAmount ? (
                   <div>
                     <button
-                      className="text-primary bg-white ring-1 ring-primary py-2 px-4 rounded-md hover:bg-primary hover:text-white"
+                      className="text-primary bg-white ring-1 ring-primary py-2 px-4 rounded-md hover:bg-primary hover:text-white disabled:cursor-not-allowed"
+                      disabled={isRequestPending}
                       onClick={backToMenuSelection}
                     >
                       {t("common.addMoreItems")}{" "}
@@ -259,7 +260,7 @@ export function BasketDialog({
                   </div>
                 ) : (
                   <button
-                    className="bg-primary text-white py-2 px-4 rounded-md hover:text-primary hover:bg-white hover:ring-1 hover:ring-primary"
+                    className="bg-primary text-white py-2 px-4 rounded-md hover:text-primary hover:bg-white hover:ring-1 hover:ring-primary disabled:cursor-not-allowed"
                     disabled={isRequestPending}
                     onClick={toCheckout}
                   >

@@ -24,7 +24,7 @@ export function BasketQuantityButtons({
     <div className="flex items-center justify-between">
       {basketItem.quantity === 1 ? (
         <button
-          className="disabled:opacity-50"
+          className="disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isRequestPending}
           onClick={() => onRemoveBasketItem(basketItem)}
         >
@@ -32,7 +32,7 @@ export function BasketQuantityButtons({
         </button>
       ) : (
         <button
-          className="disabled:opacity-50"
+          className="disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isRequestPending || basketItem.quantity === 1}
           onClick={() => onUpdateBasketItemQte(basketItem, "dec")}
         >
@@ -46,7 +46,7 @@ export function BasketQuantityButtons({
         {basketItem.quantity}
       </span>
       <button
-        className="disabled:opacity-50"
+        className="disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={
           isRequestPending ||
           (!!maxQuantityCount && basketItem.quantity === maxQuantityCount)

@@ -29,15 +29,12 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const zoneData: Zone = await fetch(
+  const zoneData = await fetch(
     `${process.env.NEXT_PUBLIC_OUVA_API_URL}/zones/${params.slug}/`
   ).then((res) => res.json());
-  if (!zoneData) {
+  if (!zoneData || zoneData.error) {
     console.error("Error fetching zone data - metadata");
-    return {
-      title: "Zone not found | Ouva Delivery",
-      description: "Zone not found",
-    };
+    notFound();
   }
 
   return {
@@ -56,7 +53,7 @@ const Page = async ({ params }: { params: { slug: string } }) => {
       notFound();
     });
 
-  if (!zoneData) {
+  if (!zoneData || zoneData.error) {
     notFound();
   }
 
