@@ -1,6 +1,4 @@
-import { FoodStore } from "@/interfaces/food-store.interface";
-
-const GUITARA_RESTAURANT: FoodStore = {
+const GUITARA_RESTAURANT = {
   slug: "guitara",
   name: "Guitara",
   description: "Guitara is a restaurant that serves delicious food",
@@ -18,7 +16,7 @@ const GUITARA_RESTAURANT: FoodStore = {
     min: 30,
     max: 45,
   },
-  storeMaxOrder: 5,
+  storeMaxOrderCount: 5,
   categories: ["pizza", "pasta", "salad", "dessert", "drinks"],
   menuSections: [
     {
@@ -35,22 +33,42 @@ const GUITARA_RESTAURANT: FoodStore = {
           ingredients: ["tomato", "mozzarella", "basil"],
           options: [
             {
-              slug: "mini",
-              name: "Mini",
-              price: 7.5,
+              optionKey: "size",
+              optionValues: [
+                {
+                  slug: "mini",
+                  name: "Mini",
+                  price: 7.5,
+                },
+                {
+                  name: "Medium",
+                  price: 12,
+                  slug: "medium",
+                },
+                {
+                  name: "Large",
+                  price: 17.5,
+                  slug: "large",
+                },
+              ],
             },
-            {
-              name: "Medium",
-              price: 12,
-              slug: "medium",
-            },
-            {
-              name: "Large",
-              price: 17.5,
-              slug: "large",
-            },
+            // {
+            //   optionKey: "size-tst",
+            //   optionValues: [
+            //     {
+            //       slug: "mini",
+            //       name: "Mini",
+            //       price: 75,
+            //     },
+            //     {
+            //       name: "Medium",
+            //       price: 120,
+            //       slug: "medium",
+            //     },
+            //   ],
+            // },
           ],
-          extraIngredients: [
+          extras: [
             {
               slug: "pepperoni",
               name: "Pepperoni",
@@ -73,19 +91,24 @@ const GUITARA_RESTAURANT: FoodStore = {
           ingredients: ["tomato", "mozzarella", "tuna"],
           options: [
             {
-              slug: "mini",
-              name: "Mini",
-              price: 7.5,
-            },
-            {
-              name: "Medium",
-              price: 12,
-              slug: "medium",
-            },
-            {
-              name: "Large",
-              price: 17.5,
-              slug: "large",
+              optionKey: "size",
+              optionValues: [
+                {
+                  slug: "mini",
+                  name: "Mini",
+                  price: 7.5,
+                },
+                {
+                  name: "Medium",
+                  price: 12,
+                  slug: "medium",
+                },
+                {
+                  name: "Large",
+                  price: 17.5,
+                  slug: "large",
+                },
+              ],
             },
           ],
         },
@@ -119,7 +142,7 @@ const GUITARA_RESTAURANT: FoodStore = {
               price: 9,
             },
           ],
-          extraIngredients: [
+          extras: [
             {
               slug: "frites",
               name: "Frites",
@@ -156,7 +179,7 @@ const GUITARA_RESTAURANT: FoodStore = {
               price: 10,
             },
           ],
-          extraIngredients: [
+          extras: [
             {
               slug: "fromage",
               name: "Fromage",
@@ -176,7 +199,7 @@ const GUITARA_RESTAURANT: FoodStore = {
   reviews: [],
 };
 
-const SHES_CAKE_RESTAURANT: FoodStore = {
+const SHES_CAKE_RESTAURANT = {
   slug: "shes-cake",
   name: "She's Cake",
   address: "Mourouj 5, TN",
@@ -233,7 +256,7 @@ const SHES_CAKE_RESTAURANT: FoodStore = {
               price: 8,
             },
           ],
-          extraIngredients: [
+          extras: [
             {
               slug: "fraise",
               name: "Fraise",
@@ -266,7 +289,7 @@ const SHES_CAKE_RESTAURANT: FoodStore = {
               price: 8,
             },
           ],
-          extraIngredients: [
+          extras: [
             {
               slug: "fraise",
               name: "Fraise",
@@ -287,7 +310,7 @@ const SHES_CAKE_RESTAURANT: FoodStore = {
           description: "Thon, Fromage, Olive",
           basePrice: 11.5,
           ingredients: ["thon", "fromage", "olive"],
-          extraIngredients: [
+          extras: [
             {
               slug: "double-fromage",
               name: "Double Fromage",
@@ -347,7 +370,44 @@ const SHES_CAKE_RESTAURANT: FoodStore = {
   ],
 };
 
-export const RESTAURANTS_LIST_DATA: FoodStore[] = [
-  GUITARA_RESTAURANT,
-  SHES_CAKE_RESTAURANT,
-];
+export const RESTAURANTS_LIST_DATA = [GUITARA_RESTAURANT, SHES_CAKE_RESTAURANT];
+
+const tt = {
+  basketItemKey: "margherita_size-mini_pepperoni-mushrooms",
+  menuItemInfo: {
+    slug: "margherita",
+    name: "Margherita",
+    description: "Mozzarella, Sauce tomate, Olive",
+    basePrice: 7.5,
+    image:
+      "https://ouvadelivery.com/wp-content/uploads/2022/05/pizza-margher.jpg?zoom=2&resize=600%2C300&ssl=1",
+    ingredients: ["tomato", "mozzarella", "basil"],
+    options: [
+      {
+        optionKey: "size",
+        optionValues: [
+          { slug: "mini", name: "Mini", price: 7.5 },
+          { name: "Medium", price: 12, slug: "medium" },
+          { name: "Large", price: 17.5, slug: "large" },
+        ],
+      },
+    ],
+    extras: [
+      { slug: "pepperoni", name: "Pepperoni", extraPrice: 1.5 },
+      { slug: "mushrooms", name: "Mushrooms", extraPrice: 1 },
+    ],
+  },
+  quantity: 1,
+  finalUnitPrice: 0,
+  selectedOptions: [
+    {
+      optionKey: "size",
+      optionValue: { slug: "mini", name: "Mini", price: 7.5 },
+    },
+  ],
+  unitPrice: 17.5,
+  selectedExtras: [
+    { slug: "pepperoni", name: "Pepperoni", extraPrice: 1.5 },
+    { slug: "mushrooms", name: "Mushrooms", extraPrice: 1 },
+  ],
+};

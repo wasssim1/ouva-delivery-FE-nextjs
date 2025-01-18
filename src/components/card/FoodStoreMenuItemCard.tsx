@@ -20,7 +20,7 @@ export function RestaurantMenuItemCard({
     <div className="bg-white rounded-lg shadow-md p-4 flex flex-col">
       <div className="flex gap-4">
         <Image
-          src={menuItem.image}
+          src={menuItem.imageUrl}
           alt={menuItem.name}
           width={120}
           height={120}

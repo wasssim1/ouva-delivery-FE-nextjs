@@ -1,6 +1,4 @@
-import { StoreCategory } from "@/interfaces/food-store.interface";
-
-export const STORE_CATEGORIES: StoreCategory[] = [
+export const STORE_CATEGORIES = [
   {
     slug: "salad",
     // name: "SALAD",

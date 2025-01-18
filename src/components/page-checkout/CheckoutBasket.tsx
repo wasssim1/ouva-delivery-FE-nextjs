@@ -4,10 +4,12 @@ import { useLocale, useTranslations } from "next-intl";
 import { lazy, Suspense } from "react";
 
 import { BasketItem, BasketState } from "@/interfaces/basket.interface";
+import { FoodStore } from "@/interfaces/food-store.interface";
 import {
   calculateBasketTotalPriceWithDelivery,
   toLocaleCurrency,
 } from "@/lib/utils";
+import { EditIcon } from "lucide-react";
 import Link from "next/link";
 
 const CartItem = lazy(
@@ -16,9 +18,10 @@ const CartItem = lazy(
 
 interface CheckoutBasketProps {
   basketData: BasketState;
+  storeInfo: FoodStore;
 }
 
-const CheckoutBasket = ({ basketData }: CheckoutBasketProps) => {
+const CheckoutBasket = ({ basketData, storeInfo }: CheckoutBasketProps) => {
   const t = useTranslations();
   const language = useLocale();
 
@@ -47,8 +50,8 @@ const CheckoutBasket = ({ basketData }: CheckoutBasketProps) => {
   //   setIsModalOpen(true);
   // };
 
-  if (!basketData?.orderItems?.length || !basketData?.foodStore) return null;
-  const { foodStore: selectedStore, orderItems } = basketData;
+  if (!basketData?.basketItems?.length) return null;
+  const { basketItems: orderItems } = basketData;
 
   return (
     <>
@@ -63,27 +66,32 @@ const CheckoutBasket = ({ basketData }: CheckoutBasketProps) => {
             <Suspense fallback={null}>
               {/* FoodStore details */}
               <div className="divider">
-                <h2 className="font-semibold cursor-pointer text-primary hover:text-secondary md:pl-8 lg:pl-3">
-                  <Link href={`${language}/}store/${selectedStore.slug}`}>
-                    &quot;{selectedStore.name}&quot;
-                  </Link>
+                <h2 className="flex justify-between text-primary font-semibold md:pl-8 lg:pl-3">
+                  <span>&quot;{storeInfo.name}&quot;</span>
+                  <span className="cursor-pointer hover:text-secondary">
+                    <Link
+                      href={`/${language}/store/${basketData.foodStoreSlug}`}
+                    >
+                      <EditIcon size={18} />
+                    </Link>
+                  </span>
                 </h2>
               </div>
               <div className="w-full mx-auto my-2 py-1 text-xs md:max-w-96">
                 <p className="italic">
-                  {selectedStore.shippingCost?.minOrder
+                  {storeInfo.shippingCost?.minOrder
                     ? `${t("common.minOrder")}: ${toLocaleCurrency(
-                        selectedStore.shippingCost.minOrder
+                        storeInfo.shippingCost?.minOrder
                       )}`
                     : t("common.noMinOrderRequired")}
                 </p>
                 <span className="flex space-x-1">
                   <p>{t("components.cartItem.paragraph")}</p>
-                  <p className="italic">{selectedStore.address}</p>
+                  <p className="italic">{storeInfo.address?.addressTxt}</p>
                 </span>
               </div>
 
-              {/* selectedStore items in cart */}
+              {/* storeInfo items in cart */}
               <ul className="grid w-full grid-cols-12 mx-auto mt-5 gap-y-2 md:max-w-96">
                 {orderItems?.map((item, index) => (
                   <li
@@ -91,24 +99,34 @@ const CheckoutBasket = ({ basketData }: CheckoutBasketProps) => {
                     key={`CART_item_KEY_${item.basketItemKey}_${index}`}
                     onClick={() => onItemClick(item)}
                   >
-                    <span className="w-8/12 col-span-7">
-                      <span className="text-primary">
-                        {item.itemDetails.name}
+                    <span className="w-8/12 col-span-7 space-x-1">
+                      <span className="text-primary capitalize">
+                        {item.menuItemSlug}
                       </span>
+                      <span className="text-sm">
+                        {item.selectedOptions
+                          ?.map((optGrp) => optGrp.optionValueSlug)
+                          .join(", ")}
+                      </span>
+                      {!!item.selectedExtrasSlugs?.length && (
+                        <span className="text-sm italic">
+                          {item.selectedExtrasSlugs.join(", ")}
+                        </span>
+                      )}
                       <b className="pl-2">x{item.quantity}</b>
                     </span>
                     <span className="flex justify-end w-1/12 col-span-2 italic">
-                      {toLocaleCurrency(item.finalUnitPrice)}
+                      {toLocaleCurrency(item.unitPrice)}
                     </span>
                   </li>
                 ))}
 
                 {/* Basket Order total */}
-                {selectedStore?.shippingCost?.cost > 0 && (
+                {storeInfo?.shippingCost?.cost > 0 && (
                   <li className="flex justify-between col-span-12 pt-3 text-sm text-right">
                     {t("common.deliveryFee")}:
                     <span className="italic">
-                      {toLocaleCurrency(selectedStore.shippingCost.cost)}
+                      {toLocaleCurrency(storeInfo.shippingCost?.cost)}
                     </span>
                   </li>
                 )}
@@ -120,7 +138,10 @@ const CheckoutBasket = ({ basketData }: CheckoutBasketProps) => {
               {t("common.totalOrder")}:{" "}
               <span className="font-bold">
                 {toLocaleCurrency(
-                  calculateBasketTotalPriceWithDelivery(basketData)
+                  calculateBasketTotalPriceWithDelivery(
+                    basketData,
+                    storeInfo.shippingCost?.cost
+                  )
                 )}
               </span>
             </h4>

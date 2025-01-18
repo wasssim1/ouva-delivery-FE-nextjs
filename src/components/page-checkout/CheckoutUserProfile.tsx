@@ -6,19 +6,29 @@ import { useFieldsPopulated } from "react-amazing-hooks";
 import { FieldsState } from "react-amazing-hooks/dist/interfaces/const";
 import { useDispatch, useSelector } from "react-redux";
 
+import { Input } from "@/components/ui/input";
 import useCheckDeliveryEligibility from "@/hooks/useCheckDeliveryEligibility";
 import { BasketState } from "@/interfaces/basket.interface";
 import { UserFormProfile } from "@/interfaces/const";
+import { FoodStore } from "@/interfaces/food-store.interface";
+import { PlaceOrderRequestDto } from "@/interfaces/order.interface";
 import { updateUserInfo } from "@/redux/slices/userSlice";
 import { RootState } from "@/redux/store";
 
-import { Input } from "@/components/ui/input";
+import {
+  clearAllLocalBaskets,
+  clearLocalBasketByStorageKey,
+} from "../dialog/BasketDialog";
 
 interface CheckoutUserProfileProps {
   basketData: BasketState;
+  storeInfo: FoodStore;
 }
 
-const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
+const CheckoutUserProfile = ({
+  basketData,
+  storeInfo,
+}: CheckoutUserProfileProps) => {
   const t = useTranslations();
   const language = useLocale();
 
@@ -29,14 +39,67 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
   // const parsedTotalCart = calculateCartTotalRaw(cart);
 
   // check delivery eligibility before submitting the form
-  const isEligibleForDelivery = useCheckDeliveryEligibility(basketData);
+  const isEligibleForDelivery = useCheckDeliveryEligibility(
+    basketData,
+    storeInfo
+  );
   const areUserFieldsPopulated = useFieldsPopulated(
     userInfo as unknown as FieldsState
   );
 
+  const clearBasketByStorageKey = () => {
+    if (basketData.basketStorageKey) {
+      clearLocalBasketByStorageKey(basketData.foodStoreSlug);
+    } else {
+      console.error("No basketStorageKey found in basketData");
+      clearAllLocalBaskets();
+    }
+  };
 
-  const clearBasketStorage = () => {
-    localStorage.removeItem(`${basketData.foodStore.slug}-basket-state`);
+  const placeOrderToApi = async (values: UserFormProfile) => {
+    const payload: PlaceOrderRequestDto = {
+      storeSlug: storeInfo.slug,
+      basketStorageKey: basketData.basketStorageKey || "",
+      email: values.email,
+      name: values.name,
+      phone: values.phone,
+      deliveryAddress: {
+        zoneSlug: values.addressZone, // to remove after adjusting geolocator extractor service in BE
+        street: values.street,
+        houseNumber: values.houseNumber,
+        postalCode: values.zip,
+        city: values.city,
+        region: values.city, // TBD
+        country: values.country,
+      },
+    };
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_OUVA_API_URL}/orders/place`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!response?.ok) {
+        throw new Error(response.statusText);
+      }
+
+      const data = await response.json();
+      if (data.error) {
+        console.error(data.error);
+        throw new Error(data.error);
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
   };
 
   // submit handler
@@ -48,27 +111,23 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
       return;
     }
 
-    if (basketData.orderItems.length && isEligibleForDelivery) {
+    if (basketData.basketItems?.length && isEligibleForDelivery) {
       try {
-        // const response = await fetch("/api/create-checkout-session", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   // body: JSON.stringify({ amount, language }),
-        // });
-
-        // const data = await response.json();
-        // const stripe = await stripePromise;
-
-        // if (stripe && data.sessionId) {
-        //   await stripe.redirectToCheckout({ sessionId: data.sessionId });
-        // }
-
-        // clearBasketStorage();
-        router.push(`/${language}/checkout/success`);
+        const responseData = await placeOrderToApi(values);
+        if (responseData?.orderId) {
+          setSubmitting(false);
+          clearBasketByStorageKey();
+          router.push(
+            `/${language}/checkout/success?order=${responseData.orderId}`
+          );
+        }
       } catch (error) {
-        alert("An error occurred. Please try again.");
+        setSubmitting(false);
+        alert(
+          `${t("common.error")} ${(error as any).message ?? error}.\n${t(
+            "common.tryAgain"
+          )}`
+        );
       }
     }
   };
@@ -89,7 +148,7 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
                   render={({ field }: FieldProps) => (
                     <Input
                       type="text"
-                      placeholder={t("components.cartUserProfile.yourName")}
+                      placeholder={t("components.cartUserProfile.name")}
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
@@ -105,7 +164,7 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
                   render={({ field }: FieldProps) => (
                     <Input
                       type="text"
-                      placeholder={t("components.cartUserProfile.yourLastName")}
+                      placeholder={t("components.cartUserProfile.lastName")}
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
@@ -137,9 +196,7 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
                   render={({ field }: FieldProps) => (
                     <Input
                       type="text"
-                      placeholder={t(
-                        "components.cartUserProfile.yourPhoneNumber"
-                      )}
+                      placeholder={t("components.cartUserProfile.phoneNumber")}
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
@@ -153,19 +210,37 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
               </div>
             </div>
             <div className="mt-8">
-              <h3 className="mb-5 text-lg">{t("common.deliveryAddress")}</h3>
+              <h3 className="mb-5 text-lg">
+                {t("components.cartUserProfile.deliveryAddress")}
+              </h3>
               <div className="grid gap-4 gap-x-5 sm:grid-cols-2">
                 <Field
-                  name="address"
+                  name="street"
                   render={({ field }: FieldProps) => (
                     <Input
                       type="text"
-                      placeholder={t("common.deliveryAddress")}
+                      placeholder={t("components.cartUserProfile.street")}
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
                         dispatch(
-                          updateUserInfo({ address: e.currentTarget.value })
+                          updateUserInfo({ street: e.currentTarget.value })
+                        );
+                      }}
+                    />
+                  )}
+                />
+                <Field
+                  name="houseNumber"
+                  render={({ field }: FieldProps) => (
+                    <Input
+                      type="text"
+                      placeholder={t("components.cartUserProfile.houseNumber")}
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        dispatch(
+                          updateUserInfo({ houseNumber: e.currentTarget.value })
                         );
                       }}
                     />
@@ -176,7 +251,7 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
                   render={({ field }: FieldProps) => (
                     <Input
                       type="text"
-                      placeholder="Zip Code"
+                      placeholder="Code Postal"
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
@@ -188,29 +263,29 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
                   )}
                 />
                 <Field
-                  name="addressZone"
-                  render={({ field }: FieldProps) => (
-                    <Input
-                      className="capitalize disabled:cursor-not-allowed"
-                      type="text"
-                      placeholder={t("common.deliveryZone")}
-                      disabled
-                      {...field}
-                    />
-                  )}
-                />
-                {/* <Field
                   name="city"
                   render={({ field }: FieldProps) => (
                     <Input
                       type="text"
                       disabled
                       className="disabled:cursor-not-allowed"
-                      placeholder={t("common.city")}
+                      placeholder={t("components.cartUserProfile.city")}
                       {...field}
                     />
                   )}
-                /> */}
+                />
+                <Field
+                  name="addressZone"
+                  render={({ field }: FieldProps) => (
+                    <Input
+                      className="capitalize disabled:cursor-not-allowed"
+                      type="text"
+                      placeholder={t("components.cartUserProfile.zone")}
+                      disabled
+                      {...field}
+                    />
+                  )}
+                />
                 <Field
                   name="country"
                   render={({ field }: FieldProps) => (
@@ -218,7 +293,7 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
                       type="text"
                       disabled
                       className="disabled:cursor-not-allowed"
-                      placeholder={t("common.country")}
+                      placeholder={t("components.cartUserProfile.country")}
                       {...field}
                     />
                   )}
@@ -227,9 +302,13 @@ const CheckoutUserProfile = ({ basketData }: CheckoutUserProfileProps) => {
               <div className="flex justify-center md:justify-end">
                 <button
                   type="submit"
-                  disabled={!(areUserFieldsPopulated && isEligibleForDelivery)}
+                  disabled={
+                    !(areUserFieldsPopulated && isEligibleForDelivery) ||
+                    isSubmitting
+                  }
                   className={`w-full xl:max-w-60 px-6 py-2 mt-5 md:mt-10 font-semibold rounded-md text-sm text-white bg-primary hover:text-primary hover:bg-white ring-1 ring-primary ${
-                    !(areUserFieldsPopulated && isEligibleForDelivery)
+                    !(areUserFieldsPopulated && isEligibleForDelivery) ||
+                    isSubmitting
                       ? "opacity-50 cursor-not-allowed"
                       : "opacity-100 hover:bg-emerald-700"
                   }`}

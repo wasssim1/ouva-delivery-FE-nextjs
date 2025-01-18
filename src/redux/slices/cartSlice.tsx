@@ -30,7 +30,7 @@ const cartSlice = createSlice({
     },
     // function to remove all products from the cart
     removeAllFromCart(state) {
-      state.orderItems.splice(0, state.orderItems.length);
+      state.basketItems.splice(0, state.basketItems.length);
       localStorage.setItem("cart", JSON.stringify(state));
     },
   },

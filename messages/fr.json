@@ -35,8 +35,9 @@
       "dragHereYourFileOr": "Déposez votre fichier ici ou",
       "sendApplication": "Envoyer la candidature"
     },
-    "orderCompleted": {
-      "paragraph": "Vous recevrez bientôt un e-mail avec le récapitulatif de votre commande !"
+    "orderPlaced": {
+      "paragraph": "Vous recevrez bientôt un SMS avec le récapitulatif de votre commande !",
+      "trackOrder": "Suivre la commande"
     },
     "store": {
       "searchFood": "Recherchez dans",
@@ -60,11 +61,15 @@
       "productAlreadyInCart": "Produit déjà dans le panier",
       "productNotAvailable": "Produit non disponible",
       "productNotFound": "Produit non trouvé",
-      "productNotAvailableAnymore": "Produit n'est plus disponible"
+      "productNotAvailableAnymore": "Produit n'est plus disponible",
+      "storeNotFound": "Restaurant non trouvé"
     },
     "zone": {
-      "noStoresFound": "Aucun restaurant trouvé dans cette zone"
+      "noStoresFound": "Aucun restaurant trouvé dans cette zone",
+      "noFilteredStoresFoundForCategory": "Aucun restaurant trouvé dans cette zone pour cette catégorie",
+      "zoneNotFound": "Zone non trouvée"
     },
+    "checkout": {},
     "login": {}
   },
   "components": {
@@ -100,10 +105,21 @@
     "cartUserProfile": {
       "title": "Complétez votre commande",
       "yourInfo": "Vos informations personnelles",
-      "yourName": "Votre nom",
-      "yourLastName": "Votre prénom",
-      "yourEmail": "Votre email",
-      "yourPhoneNumber": "Numéro de téléphone"
+      "name": "Votre nom",
+      "lastName": "Votre prénom",
+      "email": "Votre email",
+      "phoneNumber": "Numéro de téléphone",
+      "zone": "Votre zone",
+      "street": "Rue",
+      "houseNumber": "Nr.",
+      "address": "Votre adresse",
+      "deliveryAddress": "Adresse de livraison",
+      "city": "Votre ville",
+      "region": "Votre région",
+      "country": "Votre pays",
+      "paymentMethod": "Méthode de paiement",
+      "creditCard": "Carte de crédit",
+      "cashOnDelivery": "Espèces à la livraison"
     },
     "creditCardComponent": {
       "title": "Ajouter un mode de paiement",
@@ -112,6 +128,9 @@
   },
   "common": {
     "hide": "Cacher",
+    "error": "Erreur",
+    "success": "Succès",
+    "tryAgain": "Réessayer plus tard svp!",
     "show": "Afficher",
     "showAll": "Afficher tout",
     "freeDelivery": "Livraison gratuite",
@@ -126,6 +145,7 @@
     "summary": "Résumé",
     "total": "Total",
     "totalOrder": "Total de la commande",
+    "orderPlaced": "La commande a été passée avec succès",
     "orderCompleted": "Commande terminée",
     "orderNumber": "Numéro de commande",
     "name": "Prénom",
@@ -151,7 +171,11 @@
     "delete": "Supprimer",
     "remove": "Retirer",
     "adjust": "Ajuster",
-    "addMoreItems": "Ajouter plus d'articles"
+    "addMoreItems": "Ajouter plus d'articles",
+    "size": "Taille",
+    "spiciness": "Piquant",
+    "extras": "Extras",
+    "returnToHome": "Retour à l'accueil"
   },
   "notifications": {
     "message1": "CV envoyé !",
@@ -159,14 +183,16 @@
     "message3": "Numéro de commande copié !"
   },
   "foodCategories": {
-    "salad": "Salade",
-    "sandwitch": "Sandwitch",
-    "pizza": "Pizza",
-    "burger": "Burger",
+    "offers": "Offres",
+    "sandwich": "Sandwiches",
+    "fast-food": "Fast Food",
+    "salad": "Salades",
+    "pizza": "Pizzas",
+    "burger": "Burgers",
     "pasta": "Pâtes",
-    "dessert": "Dessert",
+    "dessert": "Desserts",
     "drinks": "Boissons",
-    "snacks": "Snack",
+    "snacks": "Snacks",
     "breakfast": "Petit-déjeuner",
     "lunch": "Déjeuner",
     "dinner": "Dîner"

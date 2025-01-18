@@ -6,7 +6,7 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["ouvadelivery.com", "glovo.dhmedia.io"],
+    domains: ["ouvadelivery.com"],
   },
 };
 

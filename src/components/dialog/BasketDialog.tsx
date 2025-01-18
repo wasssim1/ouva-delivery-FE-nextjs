@@ -1,4 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { Dispatch, SetStateAction, useState } from "react";
 
 import {
   Dialog,
@@ -8,88 +10,217 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { BasketItem, BasketState } from "@/interfaces/basket.interface";
+import { MenuItem } from "@/interfaces/food-store.interface";
 import { calculateTotalBasketItemsPrice, toLocaleCurrency } from "@/lib/utils";
-import { EditIcon, Trash2Icon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { BasketQuantityButtons } from "../page-store/BasketQuantityButtons";
 
 interface CartDialogProps {
+  storeMenuItems?: MenuItem[];
+  storeMinOrderAmount: number;
   basketData: BasketState;
+  setBasketData: Dispatch<SetStateAction<BasketState>>;
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
-  removeItemFromBasket: (item: BasketItem) => void;
-  editItem: (item: BasketItem) => void;
+  removeItemFromBasket: (basketItemKey: string) => void;
 }
 
 export function BasketDialog({
+  storeMenuItems,
+  storeMinOrderAmount,
   basketData,
+  setBasketData,
   isOpen,
   setIsOpen,
-  removeItemFromBasket,
-  editItem,
 }: CartDialogProps) {
   const t = useTranslations();
   const language = useLocale();
   const router = useRouter();
 
-  if (!basketData?.orderItems || !basketData?.foodStore) return null;
+  const [isRequestPending, setIsRequestPending] = useState(false);
+
+  if (!storeMenuItems?.length) return null;
+  if (!basketData?.basketItems || !basketData?.foodStoreSlug) return null;
 
   const backToMenuSelection = () => {
     setIsOpen(false);
   };
 
-  const toCheckout = () => {
-    setIsOpen(false);
-    const basketHash = btoa(`${basketData.foodStore.slug}-basket-state`);
-    router.push(`/${language}/checkout?basket=${basketHash}`);
+  const onUpdateBasketItemQuantity = async (
+    basketItem: BasketItem,
+    operation: "inc" | "dec"
+  ) => {
+    if (!basketData.basketStorageKey) return;
+
+    const payloadBody: { fromQuantity: number; operation: "inc" | "dec" } = {
+      fromQuantity: basketItem.quantity,
+      operation,
+    };
+    setIsRequestPending(true);
+    fetch(
+      `${process.env.NEXT_PUBLIC_OUVA_API_URL}/baskets/${basketData.basketStorageKey}?item=${basketItem.basketItemKey}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payloadBody),
+      }
+    )
+      .then((resp) => resp.json())
+      .then((resp) => {
+        setIsRequestPending(false);
+        if (!resp.basketStorageKey) return;
+        setBasketData((prev: BasketState) => {
+          const _basketState: BasketState = {
+            ...prev,
+            basketStorageKey: resp.basketStorageKey,
+            basketItems: resp.basketItems,
+            totalPrice: resp.totalAmount,
+          };
+
+          // Save the basket state to local storage
+          saveStoreBasketToLocalStorage(_basketState);
+
+          return _basketState;
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        setIsRequestPending(false);
+      });
   };
+
+  const removeItemFromBasket = (item: BasketItem) => {
+    if (!basketData.basketStorageKey) return;
+
+    setIsRequestPending(true);
+    fetch(
+      `${process.env.NEXT_PUBLIC_OUVA_API_URL}/baskets/${basketData.basketStorageKey}?item=${item.basketItemKey}`,
+      {
+        method: "DELETE",
+      }
+    )
+      .then((resp) => resp.json())
+      .then((resp) => {
+        setIsRequestPending(false);
+        if (!resp.basketStorageKey) return;
+
+        setBasketData((prev: BasketState) => {
+          const _basketState: BasketState = {
+            ...prev,
+            basketStorageKey: resp.basketStorageKey,
+            basketItems: resp.basketItems,
+            totalPrice: resp.totalAmount,
+          };
+
+          // Save the basket state to local storage
+          saveStoreBasketToLocalStorage(_basketState);
+
+          return _basketState;
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        setIsRequestPending(false);
+      });
+  };
+
+  const toCheckout = () => {
+    if (!isRequestPending) return;
+    if (!basketData.basketStorageKey) return;
+    setIsOpen(false);
+    router.push(`/${language}/checkout?basket=${basketData.basketStorageKey}`);
+  };
+
+  const retrieveMenuItemDetail = (menuItemSlug: string) =>
+    storeMenuItems.find((menuItem) => menuItem.slug === menuItemSlug);
+
+  const retrieveOptionDetail = (
+    menuItemSlug: string,
+    optionKey: string,
+    optionValueSlug: string
+  ) =>
+    retrieveMenuItemDetail(menuItemSlug)
+      ?.options?.find((option) => option.optionKey === optionKey)
+      ?.optionValues.find(
+        (optionValue) => optionValue.slug === optionValueSlug
+      );
+
+  const retrieveExtraDetail = (menuItemSlug: string, extraSlug: string) =>
+    retrieveMenuItemDetail(menuItemSlug)?.extras?.find(
+      (extra) => extra.slug === extraSlug
+    );
 
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="h-[70%]" title={t("common.close")}>
           <DialogHeader className="sticky">
-            <DialogTitle className="text-lg text-primary font-semibold">
-              {`${basketData.foodStore.name}: ${t("pages.store.yourBasket")}`}
+            <DialogTitle className="text-lg text-primary font-semibold capitalize">
+              {/* TODO: use storeName instead */}
+              {`${basketData.foodStoreSlug}: ${t("pages.store.yourBasket")}`}
             </DialogTitle>
           </DialogHeader>
 
           <div className="flex flex-col space-y-2 overflow-y-auto">
-            {basketData.orderItems?.map((item, index) => (
-              <div key={`KEY_${item.basketItemKey}-${index}`} className=" border-b border-gray-200 py-5">
+            {basketData.basketItems.map((item, index) => (
+              <div
+                key={`KEY_${item?.basketItemKey}-${index}`}
+                className=" border-b border-gray-200 py-5"
+              >
                 <div key={index} className="flex items-center justify-between">
                   <div>
-                    <span className="text-lg text-primary">
-                      {item.itemDetails.name}
+                    <span className="text-lg text-primary capitalize">
+                      {retrieveMenuItemDetail(item.menuItemSlug)?.name}
                     </span>
                   </div>
                   <div>
                     <span className="text-sm">{item.quantity} x </span>
                     <span className="text-sm">
-                      {toLocaleCurrency(item.finalUnitPrice)}
+                      {toLocaleCurrency(item.unitPrice)}
                     </span>
                   </div>
                   <div>
                     <span className="text-sm">
-                      {toLocaleCurrency(item.finalUnitPrice * item.quantity)}
+                      {toLocaleCurrency(item.unitPrice * item.quantity)}
                     </span>
                   </div>
                 </div>
 
-                {item.selectedOption && (
-                  <div className="ml-1">
-                    <span className="text-md">
-                      {item.selectedOption.name}{" "}
-                      {toLocaleCurrency(item.selectedOption.price)}
-                    </span>
-                  </div>
+                {item.selectedOptions?.map(
+                  (selectedOption) =>
+                    selectedOption && (
+                      <div key={selectedOption.optionKey} className="ml-1">
+                        <span className="text-md">
+                          {item.selectedOptions.map((optGrp) => (
+                            <>
+                              {t("common." + optGrp.optionKey)}:{" "}
+                              {optGrp.optionValueSlug}
+                              {toLocaleCurrency(
+                                retrieveOptionDetail(
+                                  item.menuItemSlug,
+                                  optGrp.optionKey,
+                                  optGrp.optionValueSlug
+                                )?.price
+                              )}
+                            </>
+                          ))}
+                        </span>
+                      </div>
+                    )
                 )}
 
-                {item.selectedExtras?.length && (
+                {!!item.selectedExtrasSlugs?.length && (
                   <div className="flex text-sm space-x-1 ml-3">
                     <span>{`Extra (x ${item.quantity}): `}</span>
-                    {item.selectedExtras.map((extra, index) => (
-                      <span key={index} className="italic">
-                        {extra.name} ({toLocaleCurrency(extra.extraPrice)})
+                    {item.selectedExtrasSlugs.map((extra) => (
+                      <span key={extra} className="italic">
+                        {extra} (
+                        {toLocaleCurrency(
+                          retrieveExtraDetail(item.menuItemSlug, extra)
+                            ?.extraPrice
+                        )}
+                        )
                       </span>
                     ))}
                   </div>
@@ -97,48 +228,40 @@ export function BasketDialog({
 
                 {/* Edit and Delete buttons */}
                 <div className="flex justify-end space-x-2 mt-3 text-primary">
-                  <button
-                    className="hover:text-secondary"
-                    title={t("common.edit")}
-                    onClick={() => editItem(item)}
-                  >
-                    <EditIcon size={16} />
-                  </button>
-                  <button
-                    className="hover:text-secondary"
-                    title={t("common.remove")}
-                    onClick={() => removeItemFromBasket(item)}
-                  >
-                    <Trash2Icon size={16} />
-                  </button>
+                  <BasketQuantityButtons
+                    basketItem={item}
+                    onUpdateBasketItemQte={onUpdateBasketItemQuantity}
+                    onRemoveBasketItem={removeItemFromBasket}
+                    isRequestPending={isRequestPending}
+                    // maxQuantityCount={foodMenuItem.maxOrderCount}
+                  />
                 </div>
               </div>
             ))}
           </div>
 
-          {!!basketData.orderItems?.length && (
+          {!!basketData.basketItems?.length && (
             <DialogFooter className="sticky">
               <span className="flex items-center justify-center space-x-3">
                 {calculateTotalBasketItemsPrice(basketData) <
-                basketData.foodStore.shippingCost?.minOrder ? (
+                storeMinOrderAmount ? (
                   <div>
                     <button
-                      className="text-primary bg-white ring-1 ring-primary py-2 px-4 rounded-md hover:bg-primary hover:text-white"
+                      className="text-primary bg-white ring-1 ring-primary py-2 px-4 rounded-md hover:bg-primary hover:text-white disabled:cursor-not-allowed"
+                      disabled={isRequestPending}
                       onClick={backToMenuSelection}
                     >
                       {t("common.addMoreItems")}{" "}
                     </button>
                     <p className="relative text-xs italic text-right text-secondary top-2 lg:top-1 right-3">
                       {t("common.minOrderRequired")} (
-                      {toLocaleCurrency(
-                        basketData.foodStore.shippingCost.minOrder
-                      )}
-                      )
+                      {toLocaleCurrency(storeMinOrderAmount)})
                     </p>
                   </div>
                 ) : (
                   <button
-                    className="bg-primary text-white py-2 px-4 rounded-md hover:text-primary hover:bg-white hover:ring-1 hover:ring-primary"
+                    className="bg-primary text-white py-2 px-4 rounded-md hover:text-primary hover:bg-white hover:ring-1 hover:ring-primary disabled:cursor-not-allowed"
+                    disabled={isRequestPending}
                     onClick={toCheckout}
                   >
                     {t("common.checkout")}{" "}
@@ -155,3 +278,43 @@ export function BasketDialog({
     </>
   );
 }
+
+// Utility functions to manage basket state in local storage
+const LOCAL_STORAGE_KEY = "ouva_basket";
+
+export const getStoreBasketFromLocalStorage = (): {
+  [x: string]: BasketState;
+} => {
+  const storeStorageKey = `${LOCAL_STORAGE_KEY}`;
+
+  const allBaskets = localStorage.getItem(storeStorageKey);
+  if (!allBaskets) return {};
+  const allBasketsStorage = JSON.parse(allBaskets);
+
+  return { ...allBasketsStorage };
+};
+
+export const saveStoreBasketToLocalStorage = (basket: BasketState) => {
+  const storeStorageKey = `${LOCAL_STORAGE_KEY}`;
+  const allBasketsStorage = getStoreBasketFromLocalStorage();
+
+  let toStore = {
+    ...allBasketsStorage,
+    [basket.foodStoreSlug]: basket,
+  };
+
+  localStorage.setItem(storeStorageKey, JSON.stringify(toStore));
+};
+
+export const clearLocalBasketByStorageKey = (basketKey: string) => {
+  const storeStorageKey = `${LOCAL_STORAGE_KEY}`;
+  const allBasketsStorage = getStoreBasketFromLocalStorage();
+  const newBaskets = { ...allBasketsStorage };
+
+  delete newBaskets[basketKey];
+  localStorage.setItem(storeStorageKey, JSON.stringify(newBaskets));
+};
+
+export const clearAllLocalBaskets = () => {
+  localStorage.removeItem(`${LOCAL_STORAGE_KEY}`);
+};

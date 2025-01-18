@@ -11,11 +11,15 @@ import {
   FaStar,
 } from "react-icons/fa";
 
-const RestaurantCard: React.FC<any> = ({
-  foodStore,
-}: {
+interface FoodStoreCardProps {
   foodStore: FoodStore;
-}) => {
+  isFullWidthImg?: boolean;
+}
+
+const FoodStoreCard: React.FC<any> = ({
+  foodStore,
+  isFullWidthImg = false,
+}: FoodStoreCardProps) => {
   const t = useTranslations();
   const router = useRouter();
   const language = useLocale();
@@ -29,12 +33,18 @@ const RestaurantCard: React.FC<any> = ({
     <>
       <div className="card-restaurant-container rounded-lg shadow my-2">
         {/* Card Header Image */}
-        <div className="relative inline-block overflow-hidden cursor-pointer">
+        <div
+          className={`relative inline-block overflow-hidden cursor-pointer ${
+            isFullWidthImg ? "w-full max-h-[350px]" : ""
+          }`}
+        >
           <Image
-            src={foodStore.image}
+            src={foodStore.imageUrl}
             alt={`${foodStore.name}`}
             title={`${foodStore.name}`}
-            className="aspect-video w-72 xs:w-80 xsm:w-60 rounded-t-lg hover:opacity-90 zoomImgEffect transform transition-all duration-500"
+            className={`aspect-video w-72 xs:w-80 xsm:w-60 rounded-t-lg hover:opacity-90 zoomImgEffect transform transition-all duration-500 ${
+              isFullWidthImg ? "w-full max-h-[500px]" : ""
+            }`}
             onClick={() => navigateToRestaurantPageFunction()}
             width={100}
             height={100}
@@ -47,7 +57,7 @@ const RestaurantCard: React.FC<any> = ({
             {/* store logo */}
             <div className="absolute top-0 left-0 w-10 h-10 rounded-lg bg-white shadow-md m-2">
               <Image
-                src={foodStore.logo}
+                src={foodStore.logoUrl}
                 alt={`${foodStore.name}`}
                 title={`${foodStore.name}`}
                 width={100}
@@ -62,7 +72,7 @@ const RestaurantCard: React.FC<any> = ({
           {/* Card Title */}
           <div>
             <h2
-              className="text-base tracking-tight cursor-pointer color-primary font-semibold"
+              className="text-lg tracking-tight cursor-pointer color-primary font-semibold"
               onClick={() => navigateToRestaurantPageFunction()}
             >
               {foodStore.name}
@@ -72,20 +82,24 @@ const RestaurantCard: React.FC<any> = ({
           {/* Card Details */}
           <div className="mt-2 space-y-1 text-xs">
             <div className="flex text-[13.5px] relative top-[-2px]">
-              <div className="flex items-center space-x-1">
-                <FaStar className="text-orange-400" />
-                <p>{foodStore.rating}</p>
-              </div>
-              <div>
-                {foodStore.tags?.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="text-xs bg-gray-200 px-1 py-[1px] rounded-md ml-1"
-                  >
-                    {tag.name}
-                  </span>
-                ))}
-              </div>
+              {!!foodStore.rating && (
+                <div className="flex items-center space-x-1">
+                  <FaStar className="text-orange-400" />
+                  <p>{foodStore.rating}</p>
+                </div>
+              )}
+              {!!foodStore.tags?.length && (
+                <div>
+                  {foodStore.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="text-xs bg-gray-200 px-1 py-[1px] rounded-md ml-1"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex flex-wrap space-x-2 text-gray-500">
@@ -93,7 +107,8 @@ const RestaurantCard: React.FC<any> = ({
                 <div className="flex items-center space-x-1">
                   <FaClock className="" />
                   <p className="text-sm">
-                    {foodStore.deliveryTime.min} - {foodStore.deliveryTime.max} {t("common.min")}
+                    {foodStore.deliveryTime.min} - {foodStore.deliveryTime.max}{" "}
+                    {t("common.min")}
                   </p>
                 </div>
               )}
@@ -136,14 +151,16 @@ const RestaurantCard: React.FC<any> = ({
               </p>
             </div>
 
-            <div className="flex justify-between mt-3">
-              <div className="flex relative opacity-75 text-gray-500">
-                <FaMapMarkerAlt className="mr-1" />
-                <p className="tracking-wide text-ellipsis">
-                  {foodStore.address}
-                </p>
+            {!!foodStore.address?.addressTxt && (
+              <div className="flex justify-between mt-3">
+                <div className="flex relative opacity-75 text-gray-500">
+                  <FaMapMarkerAlt className="mr-1" />
+                  <p className="tracking-wide text-ellipsis">
+                    {foodStore.address.addressTxt}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -151,4 +168,4 @@ const RestaurantCard: React.FC<any> = ({
   );
 };
 
-export default RestaurantCard;
+export default FoodStoreCard;

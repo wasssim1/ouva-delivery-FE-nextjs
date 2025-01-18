@@ -28,7 +28,7 @@ const CardsCategory: React.FC<ICardsCategory> = ({
 
   return (
     <div
-      className={`cursor-pointer shadow shadow-primary rounded-xl hover:opacity-80 text-center w-auto p-1 ${
+      className={`cursor-pointer shadow shadow-primary rounded-xl hover:opacity-80 text-center w-auto p-1 w-[90px] ${
         selectedCategory === slug
           ? "bg-primary text-white"
           : "bg-white text-primary"

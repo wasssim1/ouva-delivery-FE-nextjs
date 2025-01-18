@@ -27,7 +27,7 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
   useEffect(() => {
     // if (typeof window === "undefined") return;
-    localStorage.setItem("cuisine", selectedCuisine);
+    // localStorage.setItem("cuisine", selectedCuisine);
   }, [selectedCuisine]);
 
   return (

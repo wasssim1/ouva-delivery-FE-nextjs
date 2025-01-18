@@ -7,13 +7,21 @@ import LayoutContainer from "@/components/LayoutContainer";
 import Navbar from "@/components/navbar/Navbar";
 import { StorePageInteractiveWrapper } from "@/components/page-store/StorePageInteractiveWrapper";
 
-import { RESTAURANTS_LIST_DATA } from "@/data/restaurants";
+import { FoodStore } from "@/interfaces/food-store.interface";
 import Head from "next/head";
 
 export async function generateStaticParams() {
-  return RESTAURANTS_LIST_DATA.map((store) => ({
-    params: { slug: store.slug },
-  }));
+  return fetch(`${process.env.NEXT_PUBLIC_OUVA_API_URL}/food-stores`)
+    .then((response) => response.json())
+    .then((data) => {
+      return data.ouvaStores?.map((store: FoodStore) => ({
+        params: { slug: store.slug },
+      }));
+    })
+    .catch((err) => {
+      console.error("Error fetching store data", { err });
+      return [];
+    });
 }
 
 export async function generateMetadata({
@@ -21,9 +29,9 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const storeData = RESTAURANTS_LIST_DATA.find(
-    (store) => store.slug === params.slug
-  );
+  const storeData = await fetch(
+    `${process.env.NEXT_PUBLIC_OUVA_API_URL}/food-stores/${params.slug}`
+  ).then((response) => response.json());
 
   if (!storeData) {
     return {
@@ -38,12 +46,20 @@ export async function generateMetadata({
   };
 }
 
-const Page = ({ params }: { params: { slug: string } }) => {
-  const storeData = RESTAURANTS_LIST_DATA.find(
-    (store) => store.slug === params.slug
-  );
+const Page = async ({ params }: { params: { slug: string } }) => {
+  const storeData = await fetch(
+    `${process.env.NEXT_PUBLIC_OUVA_API_URL}/food-stores/${params.slug}`
+  ).then((response) => response.json());
 
   if (!storeData) {
+    notFound();
+  }
+
+  const menuItemsByStoreData = await fetch(
+    `${process.env.NEXT_PUBLIC_OUVA_API_URL}/food-stores/${params.slug}/menu-items`
+  ).then((response) => response.json());
+
+  if (!menuItemsByStoreData || menuItemsByStoreData.error) {
     notFound();
   }
 
@@ -56,7 +72,10 @@ const Page = ({ params }: { params: { slug: string } }) => {
       <LayoutContainer>
         <Navbar />
 
-        <StorePageInteractiveWrapper storeData={storeData} />
+        <StorePageInteractiveWrapper
+          storeData={storeData}
+          menuItemsPerStore={menuItemsByStoreData}
+        />
 
         <Footer />
       </LayoutContainer>
@@ -66,4 +85,4 @@ const Page = ({ params }: { params: { slug: string } }) => {
 
 export default Page;
 
-export const dynamic = "force-dynamic"
+export const dynamic = "force-dynamic";

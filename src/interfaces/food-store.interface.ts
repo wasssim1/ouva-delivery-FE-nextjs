@@ -2,24 +2,34 @@ export interface FoodStore {
   slug: string;
   name: string;
   description?: string;
-  address: string;
+  address: {
+    addressTxt: string;
+    location: {
+      latitude: number;
+      longitude: number;
+    };
+  };
   zone: string;
-  logo: string;
-  image: string;
+  logoUrl: string;
+  imageUrl: string;
   shippingCost: StoreShippingCost;
   deliveryTime: StoreDeliveryTime;
-  storeMaxOrder?: number;
+  storeMaxOrderCount?: number;
   categories: string[];
-  menuSections: MenuSection[];
-  tags?: StoreTag[];
+  menuItems: MenuItem[];
+  tags?: string[];
   rating?: number;
   reviews?: FoodStoreReview[];
 }
 
 export interface StoreCategory {
   slug: string;
-  // name: string;
+  name: string;
   image: string;
+  isActive?: boolean;
+  isFeatured?: boolean;
+  isPopular?: boolean;
+
   CompIcon?: any;
 }
 
@@ -42,18 +52,26 @@ export interface StoreTag {
 export interface MenuSection {
   sectionSlug: string;
   sectionTitle: string;
-  menuItems: MenuItem[];
+  imageUrl?: string;
+  menuItems?: MenuItem[];
 }
 
 export interface MenuItem {
   slug: string;
   name: string;
   description?: string;
+  maxOrderCount?: number;
   basePrice: number;
-  image: string;
-  options?: MenuItemOption[];
+  imageUrl: string;
   ingredients: string[];
-  extraIngredients?: ExtraIngredient[];
+  menuSection: MenuSection;
+  options?: MenuItemOptionsGroup[];
+  extras?: MenuItemExtra[];
+}
+
+export interface MenuItemOptionsGroup {
+  optionKey: string;
+  optionValues: MenuItemOption[];
 }
 
 export interface MenuItemOption {
@@ -63,7 +81,7 @@ export interface MenuItemOption {
   image?: string;
 }
 
-export interface ExtraIngredient {
+export interface MenuItemExtra {
   slug: string;
   name: string;
   extraPrice: number;

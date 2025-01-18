@@ -1,3 +1,5 @@
+import { UserFormProfile } from "@/interfaces/const";
+
 export const initialProduct = { name: "", price: 0, quantity: 0 };
 
 export const initialRestaurant = {
@@ -17,14 +19,16 @@ export const initialRestaurant = {
   },
 };
 
-export const initialUserProfile = {
+export const initialUserProfile: UserFormProfile = {
   name: "",
   lastname: "",
   email: "",
   phone: "",
-  address: "",
   addressZone: "",
+  street: "",
+  houseNumber: "",
   zip: "",
   city: "Tunis",
+  region: "Tunis",
   country: "Tunisie",
 };
