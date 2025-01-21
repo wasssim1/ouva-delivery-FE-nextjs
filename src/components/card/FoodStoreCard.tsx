@@ -26,7 +26,7 @@ const FoodStoreCard: React.FC<any> = ({
 
   // function to navigate to the specific restaurant page
   const navigateToRestaurantPageFunction = () => {
-    router.push(`/${language}/store/${foodStore.slug}`); //TODO: replace "id" with "slug"
+    router.push(`/${language}/store/${foodStore.slug}`);
   };
 
   return (
@@ -152,13 +152,19 @@ const FoodStoreCard: React.FC<any> = ({
             </div>
 
             {!!foodStore.address?.addressTxt && (
-              <div className="flex justify-between mt-3">
+              <div className="flex space-x-2 mt-3">
                 <div className="flex relative opacity-75 text-gray-500">
                   <FaMapMarkerAlt className="mr-1" />
                   <p className="tracking-wide text-ellipsis">
                     {foodStore.address.addressTxt}
                   </p>
                 </div>
+                <p className="text-gray-500">•</p>
+                {!!foodStore.distance && (
+                  <p className="text-xs text-gray-500">
+                    {renderDistance(foodStore.distance)}
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -169,3 +175,9 @@ const FoodStoreCard: React.FC<any> = ({
 };
 
 export default FoodStoreCard;
+
+const renderDistance = (distance: number) => {
+  if (Number.isNaN(distance)) return "";
+  if (distance < 1000) return `${distance.toFixed(0)} m`;
+  return `${(distance / 1000).toFixed(1)} km`;
+};
