@@ -4,9 +4,7 @@ import { AddressResult } from "../lookup/route";
 const GEO_APIFY_URL = "https://api.geoapify.com/v1";
 const GEO_APIFY_API_KEY = "1d6e3dd797374c43aae4e8acb7761253";
 
-export async function GET(
-  request: NextRequest
-): Promise<AddressResult | NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   const { searchParams } = new URL(request.url);
   const language = searchParams.get("lang") || "fr";
   const latlng = searchParams.get("latlng");

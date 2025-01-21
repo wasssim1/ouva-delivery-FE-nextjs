@@ -31,4 +31,13 @@ export const initialUserProfile: UserFormProfile = {
   city: "Tunis",
   region: "Tunis",
   country: "Tunisie",
+  selectedAddress: {
+    coordinates: {
+      latitude: 0,
+      longitude: 0,
+    },
+    formatted: "",
+    zone: "",
+    addressComponents: null,
+  },
 };

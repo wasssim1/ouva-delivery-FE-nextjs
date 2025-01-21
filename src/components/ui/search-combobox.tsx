@@ -74,7 +74,7 @@ export function SearchCombobox({
   );
 
   const handleOnSelectOption = (option: { label: string; value: string } | null) => {
-    setSelectedOption(option);
+    // setSelectedOption(option);
     if (!option?.value) {
       // dispatch(
       //   updateUserInfo({
