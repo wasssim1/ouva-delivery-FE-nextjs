@@ -25,4 +25,13 @@ export interface UserFormProfile {
   city: string;
   region: string;
   country: string;
+  selectedAddress: {
+    coordinates: {
+      latitude: number | null;
+      longitude: number | null;
+    };
+    formatted: string;
+    zone: string;
+    addressComponents?: any;
+  };
 }

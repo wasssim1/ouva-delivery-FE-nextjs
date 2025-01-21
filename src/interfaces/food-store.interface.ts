@@ -9,6 +9,7 @@ export interface FoodStore {
       longitude: number;
     };
   };
+  distance?: number;
   zone: string;
   logoUrl: string;
   imageUrl: string;

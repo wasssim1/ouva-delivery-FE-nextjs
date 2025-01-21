@@ -64,7 +64,7 @@ const Page = async ({ params }: { params: { slug: string } }) => {
     .catch((err) => {
       console.error("Error fetching stores data - slug", { err });
     });
-  const availableStoresListData = storesListDataResp.foundStores || [];
+  const availableStoresListData = storesListDataResp.foundStoresInZone || [];
 
   const categoriesIdsSet = new Set();
   availableStoresListData.forEach((store: FoodStore) => {
