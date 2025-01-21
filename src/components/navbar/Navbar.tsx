@@ -11,7 +11,6 @@ import { FaUser } from "react-icons/fa";
 // components
 import Hamburger from "@/components/navbar/Hamburger";
 import NavbarItem from "@/components/navbar/NavItem";
-import SelectLanguage from "@/components/SelectLanguage";
 
 // const FILL_COLOR = "#06484F";
 const FILL_COLOR = "#E5212F";
@@ -59,9 +58,9 @@ const Navbar = () => {
             </h1> */}
           </div>
           <div className="flex md:order-2">
-            <span className="hidden sm:inline relative top-1.5 right-1">
+            {/* <span className="hidden sm:inline relative top-1.5 right-1">
               <SelectLanguage />
-            </span>
+            </span> */}
             <div
               className="px-5 py-2.5 sm:flex gap-2 cursor-pointer"
               onClick={() => navigateFunction("/login")}
@@ -93,9 +92,9 @@ const Navbar = () => {
                       {t("components.navbar.cart")}
                     </Link>
                   </NavbarItem> */}
-                  <NavbarItem className={"sm:hidden flex justify-start"}>
+                  {/* <NavbarItem className={"sm:hidden flex justify-start"}>
                     <SelectLanguage />
-                  </NavbarItem>
+                  </NavbarItem> */}
                 </>
               ) : null}
             </ul>

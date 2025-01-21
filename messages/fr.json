@@ -17,7 +17,10 @@
       "paragraph1": "Téléchargez l'application Ouva Delivery et commandez où vous voulez, ",
       "paragraph2": "ce que vous voulez",
       "searchAddress": "Tapez votre adresse",
-      "selectZone": "Sélectionnez votre zone"
+      "selectZone": "Sélectionnez votre zone",
+      "enableLocation": "Activez votre localisation",
+      "enableLocationAlert": "Veuillez activer votre localisation pour afficher les restaurants dans votre zone",
+      "refreshLocation": "Actualiser votre localisation"
     },
     "orders": {
       "title": "Qu'est-ce qui vous fait envie?",
@@ -175,7 +178,11 @@
     "size": "Taille",
     "spiciness": "Piquant",
     "extras": "Extras",
-    "returnToHome": "Retour à l'accueil"
+    "returnToHome": "Retour à l'accueil",
+    "searchAddressPlaceholder": "Tapez votre adresse, quartier, ville...",
+    "noSearchResults": "Aucun résultat trouvé",
+    "invalidAddress": "Adresse invalide",
+    "addressOutOfZone": "Adresse hors de la zone de livraison"
   },
   "notifications": {
     "message1": "CV envoyé !",
