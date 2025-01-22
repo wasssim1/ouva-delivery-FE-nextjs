@@ -159,11 +159,13 @@ const FoodStoreCard: React.FC<any> = ({
                     {foodStore.address.addressTxt}
                   </p>
                 </div>
-                <p className="text-gray-500">•</p>
                 {!!foodStore.distance && (
-                  <p className="text-xs text-gray-500">
-                    {renderDistance(foodStore.distance)}
-                  </p>
+                  <>
+                    <p className="text-gray-500">•</p>
+                    <p className="text-xs text-gray-500">
+                      {renderDistance(foodStore.distance)}
+                    </p>
+                  </>
                 )}
               </div>
             )}

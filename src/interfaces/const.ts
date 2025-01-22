@@ -18,7 +18,6 @@ export interface UserFormProfile {
   lastname: string;
   email: string;
   phone: string;
-  addressZone: string;
   street: string;
   houseNumber: string;
   zip: string;

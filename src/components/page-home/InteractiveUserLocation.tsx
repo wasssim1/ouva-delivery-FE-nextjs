@@ -23,12 +23,14 @@ export function InteractiveUserLocation() {
     longitude: 0,
   });
   const [isGeoLocationLoading, setIsGeoLocationLoading] = useState(false);
+  const [geoLocError, setGeoLocError] = useState("");
 
   const [selectedAddress, setSelectedAddress] = useState(
     userInfo.selectedAddress
   );
 
-  const isSearchButtonEnabled = () => !!selectedAddress;
+  const isSearchButtonDisabled = () =>
+    isGeoLocationLoading || !userInfo.selectedAddress?.zone;
 
   const getNavigatorGeoLocation = async () => {
     if ("geolocation" in navigator) {
@@ -62,41 +64,50 @@ export function InteractiveUserLocation() {
   };
 
   const getReverseGeocoding = async (latitude: number, longitude: number) => {
+    setGeoLocError("");
     const response = await fetch(
       `/api/address/georeverse?latlng=${latitude},${longitude}&lang=${language}`
     );
     if (!response.ok) {
       console.error("Failed to fetch geo-reverse address data.");
+      setGeoLocError(t("pages.home.geoLocError"));
       return;
     }
     const data = await response.json();
     console.log({ data });
     if (!data.address) {
       console.error("Failed to fetch address data.");
+      setGeoLocError(t("pages.home.geoLocError"));
       return;
     }
 
     const address = data.address;
     onAddressChange(address);
-    console.log({ address });
   };
 
   const onAddressChange = (addressData: any) => {
-    console.log({ addressData });
+    setSelectedAddress((prev) => {
+      if (!addressData.zone) {
+        console.error("Address Zone is not covered!");
+        setGeoLocError(t("pages.home.zoneNotCovered"));
+      } else {
+        setGeoLocError("");
+        dispatch(updateUserInfo({ selectedAddress: addressData }));
+      }
 
-    setSelectedAddress(addressData);
-
-    dispatch(updateUserInfo({ selectedAddress: addressData }));
+      return addressData;
+    });
   };
 
   const onSearchClick = () => {
-    console.log({ selectedAddress });
-    if (!selectedAddress) return;
+    if (!selectedAddress?.zone) {
+      setGeoLocError(t("pages.home.zoneNotCovered"));
+      return;
+    }
 
     dispatch(
       updateUserInfo({
-        selectedAddress: selectedAddress as any,
-        addressZone: selectedAddress.zone,
+        selectedAddress: selectedAddress,
       })
     );
 
@@ -106,29 +117,28 @@ export function InteractiveUserLocation() {
   useEffect(() => {
     // check if user info geo coordinates are different from current geo coordinates
     const userInfoSelectedAddress = userInfo.selectedAddress;
-    if (
-      (userInfoSelectedAddress &&
-        userInfoSelectedAddress.coordinates?.latitude !==
-          currentGeoCoordinates.latitude) ||
-      userInfoSelectedAddress.coordinates?.longitude !==
-        currentGeoCoordinates.longitude
-    ) {
-      setSelectedAddress(userInfoSelectedAddress); // move up
-      setCurrentGeoCoordinates({
-        latitude: userInfoSelectedAddress.coordinates?.latitude || 0,
-        longitude: userInfoSelectedAddress.coordinates?.longitude || 0,
-      });
-    }
+    setSelectedAddress(userInfoSelectedAddress); // move up
+
+    setCurrentGeoCoordinates({
+      latitude: userInfoSelectedAddress.coordinates?.latitude || 0,
+      longitude: userInfoSelectedAddress.coordinates?.longitude || 0,
+    });
   }, []);
 
   useEffect(() => {
-    if (currentGeoCoordinates.latitude && currentGeoCoordinates.longitude) {
+    if (
+      currentGeoCoordinates.latitude &&
+      currentGeoCoordinates.longitude &&
+      (userInfo.selectedAddress?.coordinates?.latitude !==
+        currentGeoCoordinates.latitude ||
+        userInfo.selectedAddress?.coordinates?.longitude !==
+          currentGeoCoordinates.longitude)
+    ) {
       // get address from coordinates (reverse geocoding)
       getReverseGeocoding(
         currentGeoCoordinates.latitude,
         currentGeoCoordinates.longitude
       );
-      //   }
     }
   }, [currentGeoCoordinates]);
 
@@ -162,12 +172,13 @@ export function InteractiveUserLocation() {
             value={selectedAddress?.formatted || ""}
             disabled
             placeholder={t("pages.home.enableLocation")}
+            aria-errormessage="Please enable location"
           />
 
           <div className="mx-1">
             <button
               className="p-2 rounded-lg ring-1 ring-primary bg-primary text-white hover:text-primary hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={!isSearchButtonEnabled()}
+              disabled={isSearchButtonDisabled()}
               onClick={onSearchClick}
             >
               <FaSearchLocation
@@ -177,6 +188,11 @@ export function InteractiveUserLocation() {
             </button>
           </div>
         </div>
+        {!!geoLocError && !isGeoLocationLoading && (
+          <div className="text-center text-secondary">
+            <small>{geoLocError}</small>
+          </div>
+        )}
       </div>
     </>
   );

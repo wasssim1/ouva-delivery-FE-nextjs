@@ -20,7 +20,9 @@
       "selectZone": "Sélectionnez votre zone",
       "enableLocation": "Activez votre localisation",
       "enableLocationAlert": "Veuillez activer votre localisation pour afficher les restaurants dans votre zone",
-      "refreshLocation": "Actualiser votre localisation"
+      "refreshLocation": "Actualiser votre localisation",
+      "geoLocError": "Erreur de géolocalisation. Veuillez activer votre localisation et réessayer!",
+      "zoneNotCovered":  "Adresse hors de la zone de livraison"
     },
     "orders": {
       "title": "Qu'est-ce qui vous fait envie?",
@@ -34,7 +36,7 @@
       "subtitle2": "stable et flexible",
       "paragraph": "Livrez vos commandes... le reste, c'est pour nous!",
       "descrApplication": "Veuillez joindre votre CV mis à jour contenant des informations telles que votre nom, prénom et numéro de téléphone afin de pouvoir vous contacter. Le groupe Ouva constitue l'endroit idéal où chacun peut écrire son histoire professionnelle en contribuant, avec engagement et détermination, à écrire l'histoire du pays. Nous vous attendons !",
-      "uploadedFile": "Fichier téléchargé :",
+      "uploadedFile": "Fichier téléchargé:",
       "dragHereYourFileOr": "Déposez votre fichier ici ou",
       "sendApplication": "Envoyer la candidature"
     },
@@ -72,7 +74,12 @@
       "noFilteredStoresFoundForCategory": "Aucun restaurant trouvé dans cette zone pour cette catégorie",
       "zoneNotFound": "Zone non trouvée"
     },
-    "checkout": {},
+    "checkout": {
+      "noZoneSelected": "Aucune zone sélectionnée",
+      "noZoneFound": "Aucune zone trouvée",
+      "outOfScopeZone": "Adresse hors de la zone de livraison",
+      "addressNotFound": "Adresse non trouvée. Veuillez réessayer"
+    },
     "login": {}
   },
   "components": {

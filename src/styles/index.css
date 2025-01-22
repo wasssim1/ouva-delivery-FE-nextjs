@@ -79,3 +79,11 @@ body::-webkit-scrollbar {
     height: 650px;
   }
 }
+
+.leaflet-marker-icon {
+}
+
+.leaflet-marker-shadow {
+  transition: transform 0.3s ease-in-out;
+  opacity: 0.7;
+}

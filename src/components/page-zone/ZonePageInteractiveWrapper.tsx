@@ -1,15 +1,16 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-amazing-hooks";
 import { FaSearchLocation } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 import { FoodStore, StoreCategory } from "@/interfaces/food-store.interface";
 import { Zone } from "@/interfaces/zone.interface";
 import { RootState } from "@/redux/store";
 
-import { useSelector } from "react-redux";
 import FoodStoreCard from "../card/FoodStoreCard";
 import FloatingButton from "../FloatingButton";
 import Header from "../Header";
@@ -28,12 +29,9 @@ export function ZonePageInteractiveWrapper({
   storeCategoriesData,
   storesListData,
 }: ZonePageInteractiveWrapperProps) {
-  const [searchText, setSearchText] = useState("");
-
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [storesList, setStoresList] = useState<FoodStore[]>(storesListData);
-
   const t = useTranslations();
+  const language = useLocale();
+  const router = useRouter();
 
   // redux
   const userInfo = useSelector((state: RootState) => state.user);
@@ -41,6 +39,11 @@ export function ZonePageInteractiveWrapper({
   // media queries
   const isAtLeastTablet = useMediaQuery({ min: 768 });
   const isAtLeast900 = useMediaQuery({ min: 900 });
+
+  // local states
+  const [searchText, setSearchText] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [storesList, setStoresList] = useState<FoodStore[]>(storesListData);
 
   // at page load, set focus on the search field
   // const focusInputFunction = useCallback(() => {
@@ -90,22 +93,26 @@ export function ZonePageInteractiveWrapper({
   };
 
   useEffect(() => {
-    // fetch store proximity to user address coordinates
-    if (userInfo.selectedAddress) {
-      //   const userAddress = userInfo.selectedAddress;
-      const userCoordinates = userInfo.selectedAddress.coordinates;
-      const userAddressZone = userInfo.addressZone;
+    if (
+      !userInfo.selectedAddress?.zone ||
+      userInfo.selectedAddress?.zone !== zoneData.slug
+    ) {
+      router.push(`/${language}`);
+      return;
+    }
 
-      const fetchStoresByZoneAndLatLng = async (
-        zone: string,
-        latlng: string
-      ) => {
+    // fetch store proximity to user address coordinates
+
+    const userCoordinates = userInfo.selectedAddress?.coordinates;
+
+    if (userCoordinates.latitude && userCoordinates.longitude) {
+      const fetchStoresProximityByLatLng = async (latlng: string) => {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_OUVA_API_URL}/food-stores/proximity?latlng=${latlng}`
         );
         const result = await response.json();
 
-        if (result.error) {
+        if (result.error || !result.geoNearStores) {
           console.error("Error fetching stores data - zone and latlng");
         } else {
           // map fetched stores to state per item
@@ -120,8 +127,7 @@ export function ZonePageInteractiveWrapper({
         }
       };
 
-      fetchStoresByZoneAndLatLng(
-        userAddressZone,
+      fetchStoresProximityByLatLng(
         `${userCoordinates.latitude},${userCoordinates.longitude}`
       );
     }
