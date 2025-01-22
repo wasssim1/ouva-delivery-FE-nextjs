@@ -15,7 +15,7 @@ export type AddressResult = {
     latitude: number;
     longitude: number;
   };
-  zone: string;
+  zone: string | undefined;
   addressComponents?: any;
 };
 

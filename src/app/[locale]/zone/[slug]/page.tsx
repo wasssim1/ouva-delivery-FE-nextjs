@@ -88,7 +88,7 @@ const Page = async ({ params }: { params: { slug: string } }) => {
       console.error("Error fetching store categories data - slug", { err });
     });
 
-  const availableStoreCategoriesData = storeCategoriesDataResp.categoriesList;
+  // const availableStoreCategoriesData = storeCategoriesDataResp?.categoriesList;
   // TODO: filter categories based on available stores
   // STORE_CATEGORIES.filter((category) =>
   //   availableStoresListData.some((store) =>
