@@ -43,9 +43,9 @@ export function LeafletMapPicker({
     }).setView([lat, lng], 17);
 
     L.tileLayer(
-      `${process.env.NEXT_PUBLIC_GEOAPIFY_MAP_URL}/{style}/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_API_KEY}`,
+      `${process.env.NEXT_PUBLIC_GEOAPIFY_MAP_URL}/positron/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_API_KEY}`,
       {
-        style: "positron",
+        // style: "positron",
         attribution: "&copy; OpenStreetMap",
         maxZoom: 25,
       }
@@ -86,7 +86,7 @@ export function LeafletMapPicker({
       // marker.bounce({ duration: 500, height: 15 });
     };
 
-    const onMarkerDragEnd = (event: L.LeafletMouseEvent) => {
+    const onMarkerDragEnd = (event: L.DragEndEvent) => {
       const { lat, lng } = event.target.getLatLng();
       handleSelectGeoLocation(lat, lng);
     };

@@ -24,7 +24,6 @@ export const initialUserProfile: UserFormProfile = {
   lastname: "",
   email: "",
   phone: "",
-  addressZone: "",
   street: "",
   houseNumber: "",
   zip: "",
