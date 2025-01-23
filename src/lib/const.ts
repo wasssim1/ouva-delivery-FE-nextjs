@@ -24,12 +24,6 @@ export const initialUserProfile: UserFormProfile = {
   lastname: "",
   email: "",
   phone: "",
-  street: "",
-  houseNumber: "",
-  zip: "",
-  city: "Tunis",
-  region: "Tunis",
-  country: "Tunisie",
   selectedAddress: {
     coordinates: {
       latitude: 0,
@@ -37,6 +31,6 @@ export const initialUserProfile: UserFormProfile = {
     },
     formatted: "",
     zone: "",
-    addressComponents: null,
+    addressComponents: {},
   },
 };
