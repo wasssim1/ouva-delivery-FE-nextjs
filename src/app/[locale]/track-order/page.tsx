@@ -102,9 +102,11 @@ export default function TrackOrderPage() {
         <Navbar />
         <div className="container h-screen mt-10 text-center">
           <div className="text-primary text-2xl">
-            <h1>
-              {`${t("pages.trackOrder.pageTitle")} "${params.get("id")}"`}
-            </h1>
+            {!!params.get("id") && (
+              <h1>
+                {`${t("pages.trackOrder.pageTitle")} "${params.get("id")}"`}
+              </h1>
+            )}
           </div>
 
           {!!orderDetail && (
@@ -168,9 +170,9 @@ export default function TrackOrderPage() {
                   </ul>
                 </li>
               </ul>
-              {fetchError && <div className="text-secondary">{fetchError}</div>}
             </div>
           )}
+          {fetchError && <div className="text-secondary">{fetchError}</div>}
 
           {/* <div className="flex justify-center mt-10">
             {orderDetail.store?.coordinates &&
