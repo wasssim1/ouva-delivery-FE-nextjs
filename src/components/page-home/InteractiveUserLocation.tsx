@@ -74,7 +74,6 @@ export function InteractiveUserLocation() {
       return;
     }
     const data = await response.json();
-    console.log({ data });
     if (!data.address) {
       console.error("Failed to fetch address data.");
       setGeoLocError(t("pages.home.geoLocError"));

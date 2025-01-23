@@ -6,7 +6,8 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["ouvadelivery.com"],
+    domains: ["ouvadelivery.com", "maps.geoapify.com"],
+    // remotePatterns: ["https://ouvadelivery.com/*", "https://maps.geoapify.com"],
   },
 };
 

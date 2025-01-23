@@ -39,6 +39,7 @@ const CheckoutUserProfile = ({
   const userInfo = useSelector((state: RootState) => state.user);
   // const parsedTotalCart = calculateCartTotalRaw(cart);
   const [geoLocError, setGeoLocError] = useState("");
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 
   // check delivery eligibility before submitting the form
   const isEligibleForDelivery = useCheckDeliveryEligibility(
@@ -97,12 +98,12 @@ const CheckoutUserProfile = ({
       phone: formValues.phone,
       deliveryAddress: {
         zoneSlug: formValues.selectedAddress.zone,
-        street: formValues.street,
-        houseNumber: formValues.houseNumber,
-        postalCode: formValues.zip,
-        city: formValues.city,
-        region: formValues.city, // TBD
-        country: formValues.country,
+        formatted: formValues.selectedAddress.formatted,
+        coordinates: {
+          latitude: formValues.selectedAddress.coordinates.latitude || 0,
+          longitude: formValues.selectedAddress.coordinates.longitude || 0,
+        },
+        addressComponents: formValues.selectedAddress.addressComponents,
       },
     };
 
@@ -130,6 +131,7 @@ const CheckoutUserProfile = ({
 
       return data;
     } catch (error) {
+      setIsSubmitLoading(false);
       throw error;
     }
   };
@@ -145,16 +147,16 @@ const CheckoutUserProfile = ({
 
     if (basketData.basketItems?.length && isEligibleForDelivery) {
       try {
+        setIsSubmitLoading(true);
         const responseData = await placeOrderToApi(values);
         if (responseData?.orderId) {
-          setSubmitting(false);
           clearBasketByStorageKey();
           router.push(
             `/${language}/checkout/success?order=${responseData.orderId}`
           );
         }
       } catch (error) {
-        setSubmitting(false);
+        setIsSubmitLoading(false);
         alert(
           `${t("common.error")} ${(error as any).message ?? error}.\n${t(
             "common.tryAgain"
@@ -288,7 +290,8 @@ const CheckoutUserProfile = ({
                   type="submit"
                   disabled={
                     !(areUserFieldsPopulated() && isEligibleForDelivery) ||
-                    isSubmitting
+                    isSubmitting ||
+                    isSubmitLoading
                   }
                   className={`w-full xl:max-w-60 px-6 py-2 mt-5 md:mt-10 font-semibold rounded-md text-sm text-white bg-primary hover:text-primary hover:bg-white ring-1 ring-primary ${
                     !(areUserFieldsPopulated() && isEligibleForDelivery) ||

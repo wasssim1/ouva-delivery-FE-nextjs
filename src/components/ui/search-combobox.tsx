@@ -31,7 +31,7 @@ export function SearchCombobox({
   // const dispatch = useDispatch();
   // const userInfo = useSelector((state: RootState) => state.user);
 
-  const [inputSearch, setInputSearch] = useState('');
+  const [inputSearch, setInputSearch] = useState("");
   const [selectedOption, setSelectedOption] = useState(null);
   const [searchResultList, setSearchResultList] = useState<
     AddressLookupResultItem[]
@@ -62,8 +62,6 @@ export function SearchCombobox({
       return;
     }
 
-    console.log({ data });
-
     setSearchResultList(data.results);
     setIsLoading(false);
   };
@@ -73,7 +71,9 @@ export function SearchCombobox({
     []
   );
 
-  const handleOnSelectOption = (option: { label: string; value: string } | null) => {
+  const handleOnSelectOption = (
+    option: { label: string; value: string } | null
+  ) => {
     // setSelectedOption(option);
     if (!option?.value) {
       // dispatch(
@@ -120,8 +120,6 @@ export function SearchCombobox({
   }, [searchResultList]);
 
   useEffect(() => {
-    console.log({ selectedAddress, optionsList });
-
     if (selectedAddress?.formatted) {
       let _optionsList: { label: string; value: string }[] = optionsList;
       if (!optionsList?.length) _optionsList = [];
@@ -140,7 +138,6 @@ export function SearchCombobox({
 
   return (
     <>
-    <code>{inputSearch}</code>
       <Select
         // className="w-full text-gray-700 bg-white border rounded-full focus:outline-none focus:border-secondary"
         // className="basic-single"

@@ -22,7 +22,7 @@
       "enableLocationAlert": "Veuillez activer votre localisation pour afficher les restaurants dans votre zone",
       "refreshLocation": "Actualiser votre localisation",
       "geoLocError": "Erreur de géolocalisation. Veuillez activer votre localisation et réessayer!",
-      "zoneNotCovered":  "Adresse hors de la zone de livraison"
+      "zoneNotCovered": "Adresse hors de la zone de livraison"
     },
     "orders": {
       "title": "Qu'est-ce qui vous fait envie?",
@@ -79,6 +79,19 @@
       "noZoneFound": "Aucune zone trouvée",
       "outOfScopeZone": "Adresse hors de la zone de livraison",
       "addressNotFound": "Adresse non trouvée. Veuillez réessayer"
+    },
+    "trackOrder": {
+      "pageTitle": "Suivre la commande",
+      "orderNotFound": "Commande non trouvée",
+      "storeName": "Nom du restaurant",
+      "storeAddress": "Adresse du restaurant",
+      "destinationAddress": "Adresse de destination",
+      "orderStatus": "Statut de la commande",
+      "totalOrderAmount": "Montant total de la commande",
+      "deliveryFee": "Frais de livraison",
+      "totalAmountToPay": "Montant total à payer",
+      "paymentMethod": "Méthode de paiement",
+      "orderHistory": "Historique de la commande"
     },
     "login": {}
   },
@@ -210,5 +223,12 @@
     "breakfast": "Petit-déjeuner",
     "lunch": "Déjeuner",
     "dinner": "Dîner"
+  },
+  "enums": {
+    "PENDING": "En attente",
+    "DELIVERED": "Livré",
+    "CANCELLED": "Annulé",
+    "CASH": "Espèces",
+    "CASH_ON_DELIVERY": "Espèces à la livraison"
   }
 }
