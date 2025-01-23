@@ -17,7 +17,12 @@
       "paragraph1": "Téléchargez l'application Ouva Delivery et commandez où vous voulez, ",
       "paragraph2": "ce que vous voulez",
       "searchAddress": "Tapez votre adresse",
-      "selectZone": "Sélectionnez votre zone"
+      "selectZone": "Sélectionnez votre zone",
+      "enableLocation": "Activez votre localisation",
+      "enableLocationAlert": "Veuillez activer votre localisation pour afficher les restaurants dans votre zone",
+      "refreshLocation": "Actualiser votre localisation",
+      "geoLocError": "Erreur de géolocalisation. Veuillez activer votre localisation et réessayer!",
+      "zoneNotCovered": "Adresse hors de la zone de livraison"
     },
     "orders": {
       "title": "Qu'est-ce qui vous fait envie?",
@@ -31,7 +36,7 @@
       "subtitle2": "stable et flexible",
       "paragraph": "Livrez vos commandes... le reste, c'est pour nous!",
       "descrApplication": "Veuillez joindre votre CV mis à jour contenant des informations telles que votre nom, prénom et numéro de téléphone afin de pouvoir vous contacter. Le groupe Ouva constitue l'endroit idéal où chacun peut écrire son histoire professionnelle en contribuant, avec engagement et détermination, à écrire l'histoire du pays. Nous vous attendons !",
-      "uploadedFile": "Fichier téléchargé :",
+      "uploadedFile": "Fichier téléchargé:",
       "dragHereYourFileOr": "Déposez votre fichier ici ou",
       "sendApplication": "Envoyer la candidature"
     },
@@ -69,7 +74,25 @@
       "noFilteredStoresFoundForCategory": "Aucun restaurant trouvé dans cette zone pour cette catégorie",
       "zoneNotFound": "Zone non trouvée"
     },
-    "checkout": {},
+    "checkout": {
+      "noZoneSelected": "Aucune zone sélectionnée",
+      "noZoneFound": "Aucune zone trouvée",
+      "outOfScopeZone": "Adresse hors de la zone de livraison",
+      "addressNotFound": "Adresse non trouvée. Veuillez réessayer"
+    },
+    "trackOrder": {
+      "pageTitle": "Suivre la commande",
+      "orderNotFound": "Commande non trouvée",
+      "storeName": "Nom du restaurant",
+      "storeAddress": "Adresse du restaurant",
+      "destinationAddress": "Adresse de destination",
+      "orderStatus": "Statut de la commande",
+      "totalOrderAmount": "Montant total de la commande",
+      "deliveryFee": "Frais de livraison",
+      "totalAmountToPay": "Montant total à payer",
+      "paymentMethod": "Méthode de paiement",
+      "orderHistory": "Historique de la commande"
+    },
     "login": {}
   },
   "components": {
@@ -175,7 +198,11 @@
     "size": "Taille",
     "spiciness": "Piquant",
     "extras": "Extras",
-    "returnToHome": "Retour à l'accueil"
+    "returnToHome": "Retour à l'accueil",
+    "searchAddressPlaceholder": "Tapez votre adresse, quartier, ville...",
+    "noSearchResults": "Aucun résultat trouvé",
+    "invalidAddress": "Adresse invalide",
+    "addressOutOfZone": "Adresse hors de la zone de livraison"
   },
   "notifications": {
     "message1": "CV envoyé !",
@@ -196,5 +223,12 @@
     "breakfast": "Petit-déjeuner",
     "lunch": "Déjeuner",
     "dinner": "Dîner"
+  },
+  "enums": {
+    "PENDING": "En attente",
+    "DELIVERED": "Livré",
+    "CANCELLED": "Annulé",
+    "CASH": "Espèces",
+    "CASH_ON_DELIVERY": "Espèces à la livraison"
   }
 }

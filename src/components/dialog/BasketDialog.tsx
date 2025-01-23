@@ -126,7 +126,7 @@ export function BasketDialog({
   };
 
   const toCheckout = () => {
-    if (!isRequestPending) return;
+    if (isRequestPending) return;
     if (!basketData.basketStorageKey) return;
     setIsOpen(false);
     router.push(`/${language}/checkout?basket=${basketData.basketStorageKey}`);
@@ -188,9 +188,12 @@ export function BasketDialog({
                 </div>
 
                 {item.selectedOptions?.map(
-                  (selectedOption) =>
+                  (selectedOption, idx) =>
                     selectedOption && (
-                      <div key={selectedOption.optionKey} className="ml-1">
+                      <div
+                        key={`${selectedOption.optionKey}-${idx}`}
+                        className="ml-1"
+                      >
                         <span className="text-md">
                           {item.selectedOptions.map((optGrp) => (
                             <>

@@ -1,3 +1,5 @@
+"use client";
+
 import { useMediaQuery } from "react-amazing-hooks";
 
 import { StoreCategory } from "@/interfaces/food-store.interface";
@@ -18,6 +20,8 @@ export function StoreCategoriesCarousel({
   setSelectedCategory,
 }: StoreCategoriesCarouselProps) {
   const isCarouselMediaQuery = useMediaQuery({ max: 1200 });
+
+  if (!window) return null;
 
   // get responsive settings for the carousel
   const responsiveSettings = getResponsiveSettings();

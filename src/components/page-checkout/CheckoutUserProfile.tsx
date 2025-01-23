@@ -1,9 +1,9 @@
 "use client";
+
 import { Field, FieldProps, Form, Formik } from "formik";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useFieldsPopulated } from "react-amazing-hooks";
-import { FieldsState } from "react-amazing-hooks/dist/interfaces/const";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,7 @@ import {
   clearAllLocalBaskets,
   clearLocalBasketByStorageKey,
 } from "../dialog/BasketDialog";
+import { LeafletMapPicker } from "../map/LeafletMapPicker";
 
 interface CheckoutUserProfileProps {
   basketData: BasketState;
@@ -37,15 +38,47 @@ const CheckoutUserProfile = ({
   // const cart = useSelector((state: RootState) => state.cart);
   const userInfo = useSelector((state: RootState) => state.user);
   // const parsedTotalCart = calculateCartTotalRaw(cart);
+  const [geoLocError, setGeoLocError] = useState("");
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 
   // check delivery eligibility before submitting the form
   const isEligibleForDelivery = useCheckDeliveryEligibility(
     basketData,
     storeInfo
   );
-  const areUserFieldsPopulated = useFieldsPopulated(
-    userInfo as unknown as FieldsState
-  );
+  const areUserFieldsPopulated = () =>
+    userInfo.name &&
+    userInfo.lastname &&
+    userInfo.email &&
+    userInfo.phone &&
+    userInfo.selectedAddress?.zone &&
+    userInfo.selectedAddress?.formatted &&
+    userInfo.selectedAddress?.coordinates?.latitude &&
+    userInfo.selectedAddress?.coordinates?.longitude;
+
+  const handleLocationSelect = async (lat: number, lng: number) => {
+    setGeoLocError("");
+    const response = await fetch(
+      `/api/address/georeverse?latlng=${lat},${lng}&lang=${language}`
+    );
+    const data = await response.json();
+    if (!data.address) {
+      console.error("No address found for selected coordinates");
+      setGeoLocError(t("pages.checkout.addressNotFound"));
+      return;
+    }
+    if (!data.address.zone) {
+      console.error("No zone found for selected coordinates");
+      setGeoLocError(t("pages.checkout.outOfScopeZone"));
+      // return;
+    }
+
+    dispatch(
+      updateUserInfo({
+        selectedAddress: data.address,
+      })
+    );
+  };
 
   const clearBasketByStorageKey = () => {
     if (basketData.basketStorageKey) {
@@ -56,21 +89,21 @@ const CheckoutUserProfile = ({
     }
   };
 
-  const placeOrderToApi = async (values: UserFormProfile) => {
+  const placeOrderToApi = async (formValues: UserFormProfile) => {
     const payload: PlaceOrderRequestDto = {
       storeSlug: storeInfo.slug,
       basketStorageKey: basketData.basketStorageKey || "",
-      email: values.email,
-      name: values.name,
-      phone: values.phone,
+      email: formValues.email,
+      name: formValues.name,
+      phone: formValues.phone,
       deliveryAddress: {
-        zoneSlug: values.addressZone, // to remove after adjusting geolocator extractor service in BE
-        street: values.street,
-        houseNumber: values.houseNumber,
-        postalCode: values.zip,
-        city: values.city,
-        region: values.city, // TBD
-        country: values.country,
+        zoneSlug: formValues.selectedAddress.zone,
+        formatted: formValues.selectedAddress.formatted,
+        coordinates: {
+          latitude: formValues.selectedAddress.coordinates.latitude || 0,
+          longitude: formValues.selectedAddress.coordinates.longitude || 0,
+        },
+        addressComponents: formValues.selectedAddress.addressComponents,
       },
     };
 
@@ -98,6 +131,7 @@ const CheckoutUserProfile = ({
 
       return data;
     } catch (error) {
+      setIsSubmitLoading(false);
       throw error;
     }
   };
@@ -107,22 +141,22 @@ const CheckoutUserProfile = ({
     values: UserFormProfile,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
   ) => {
-    if (!areUserFieldsPopulated) {
+    if (!areUserFieldsPopulated()) {
       return;
     }
 
     if (basketData.basketItems?.length && isEligibleForDelivery) {
       try {
+        setIsSubmitLoading(true);
         const responseData = await placeOrderToApi(values);
         if (responseData?.orderId) {
-          setSubmitting(false);
           clearBasketByStorageKey();
           router.push(
             `/${language}/checkout/success?order=${responseData.orderId}`
           );
         }
       } catch (error) {
-        setSubmitting(false);
+        setIsSubmitLoading(false);
         alert(
           `${t("common.error")} ${(error as any).message ?? error}.\n${t(
             "common.tryAgain"
@@ -215,67 +249,7 @@ const CheckoutUserProfile = ({
               </h3>
               <div className="grid gap-4 gap-x-5 sm:grid-cols-2">
                 <Field
-                  name="street"
-                  render={({ field }: FieldProps) => (
-                    <Input
-                      type="text"
-                      placeholder={t("components.cartUserProfile.street")}
-                      {...field}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        dispatch(
-                          updateUserInfo({ street: e.currentTarget.value })
-                        );
-                      }}
-                    />
-                  )}
-                />
-                <Field
-                  name="houseNumber"
-                  render={({ field }: FieldProps) => (
-                    <Input
-                      type="text"
-                      placeholder={t("components.cartUserProfile.houseNumber")}
-                      {...field}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        dispatch(
-                          updateUserInfo({ houseNumber: e.currentTarget.value })
-                        );
-                      }}
-                    />
-                  )}
-                />
-                <Field
-                  name="zip"
-                  render={({ field }: FieldProps) => (
-                    <Input
-                      type="text"
-                      placeholder="Code Postal"
-                      {...field}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        dispatch(
-                          updateUserInfo({ zip: e.currentTarget.value })
-                        );
-                      }}
-                    />
-                  )}
-                />
-                <Field
-                  name="city"
-                  render={({ field }: FieldProps) => (
-                    <Input
-                      type="text"
-                      disabled
-                      className="disabled:cursor-not-allowed"
-                      placeholder={t("components.cartUserProfile.city")}
-                      {...field}
-                    />
-                  )}
-                />
-                <Field
-                  name="addressZone"
+                  name="selectedAddress.formatted"
                   render={({ field }: FieldProps) => (
                     <Input
                       className="capitalize disabled:cursor-not-allowed"
@@ -283,31 +257,44 @@ const CheckoutUserProfile = ({
                       placeholder={t("components.cartUserProfile.zone")}
                       disabled
                       {...field}
+                      value={userInfo.selectedAddress?.formatted}
                     />
                   )}
                 />
                 <Field
-                  name="country"
+                  name="selectedAddress.zone"
                   render={({ field }: FieldProps) => (
                     <Input
+                      className="capitalize disabled:cursor-not-allowed"
                       type="text"
+                      placeholder={t("components.cartUserProfile.zone")}
                       disabled
-                      className="disabled:cursor-not-allowed"
-                      placeholder={t("components.cartUserProfile.country")}
                       {...field}
+                      value={userInfo.selectedAddress?.zone || ""}
                     />
                   )}
                 />
               </div>
+
+              <div className="text-center my-5 mx-2 p-2">
+                <LeafletMapPicker onLocationSelect={handleLocationSelect} />
+                {!!geoLocError && (
+                  <div className="text-secondary">
+                    <small>{geoLocError}</small>
+                  </div>
+                )}
+              </div>
+
               <div className="flex justify-center md:justify-end">
                 <button
                   type="submit"
                   disabled={
-                    !(areUserFieldsPopulated && isEligibleForDelivery) ||
-                    isSubmitting
+                    !(areUserFieldsPopulated() && isEligibleForDelivery) ||
+                    isSubmitting ||
+                    isSubmitLoading
                   }
                   className={`w-full xl:max-w-60 px-6 py-2 mt-5 md:mt-10 font-semibold rounded-md text-sm text-white bg-primary hover:text-primary hover:bg-white ring-1 ring-primary ${
-                    !(areUserFieldsPopulated && isEligibleForDelivery) ||
+                    !(areUserFieldsPopulated() && isEligibleForDelivery) ||
                     isSubmitting
                       ? "opacity-50 cursor-not-allowed"
                       : "opacity-100 hover:bg-emerald-700"

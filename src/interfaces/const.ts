@@ -18,11 +18,15 @@ export interface UserFormProfile {
   lastname: string;
   email: string;
   phone: string;
-  addressZone: string;
-  street: string;
-  houseNumber: string;
-  zip: string;
-  city: string;
-  region: string;
-  country: string;
+  selectedAddress: {
+    coordinates: {
+      latitude: number | null;
+      longitude: number | null;
+    };
+    formatted: string;
+    zone: string;
+    addressComponents?: {
+      [key: string]: string;
+    };
+  };
 }

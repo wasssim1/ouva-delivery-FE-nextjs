@@ -2,20 +2,18 @@ export interface OrderAddressDto {
   // latitude: number;
 
   // longitude: number;
+  formatted: string;
+
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  };
 
   zoneSlug: string;
 
-  street: string;
-
-  houseNumber: string;
-
-  postalCode: string;
-
-  city: string;
-
-  region: string;
-
-  country: string;
+  addressComponents?: {
+    [key: string]: string;
+  };
 }
 
 export interface PlaceOrderRequestDto {

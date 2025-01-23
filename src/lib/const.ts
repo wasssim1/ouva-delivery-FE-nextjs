@@ -24,11 +24,13 @@ export const initialUserProfile: UserFormProfile = {
   lastname: "",
   email: "",
   phone: "",
-  addressZone: "",
-  street: "",
-  houseNumber: "",
-  zip: "",
-  city: "Tunis",
-  region: "Tunis",
-  country: "Tunisie",
+  selectedAddress: {
+    coordinates: {
+      latitude: 0,
+      longitude: 0,
+    },
+    formatted: "",
+    zone: "",
+    addressComponents: {},
+  },
 };
