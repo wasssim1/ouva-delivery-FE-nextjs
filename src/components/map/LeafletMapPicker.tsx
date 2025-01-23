@@ -6,7 +6,6 @@ import "leaflet/dist/leaflet.css";
 
 import { RootState } from "@/redux/store";
 
-const GEOAPIFY_API_KEY = "1d6e3dd797374c43aae4e8acb7761253";
 // const MAP_MARKER_ICON_ASSET = "/assets/map/place-marker.svg";
 const MAP_MARKER_ICON_ASSET_URL = "/favicon.ico";
 const MAP_MARKER_ICON_RETINA_ASSET_URL = "/favicon.ico";
@@ -36,18 +35,29 @@ export function LeafletMapPicker({
       return;
     }
 
+    const bounds = L.latLngBounds(
+      [36.69139163377213, 10.198971653009153], // Southwest corner (lat, lng)
+      [36.753855897411825, 10.213304140312061]  // Northeast corner (lat, lng)
+    );
+
     const map = L.map("map", {
       // attributionControl: false,
       // center: [lat, lng],
       maxZoom: 20,
+      minZoom: 10,
+      // maxBounds: bounds,
+      // maxBoundsViscosity: 1.0,
+      bounceAtZoomLimits: true,
+      markerZoomAnimation: true,
     }).setView([lat, lng], 17);
 
     L.tileLayer(
-      `${process.env.NEXT_PUBLIC_GEOAPIFY_MAP_URL}/positron/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_API_KEY}`,
+      `${process.env.NEXT_PUBLIC_GEOAPIFY_TILE_MAP_URL}/positron/{z}/{x}/{y}.png?apiKey=${process.env.NEXT_PUBLIC_GEOAPIFY_MAP_KEY}`,
       {
         // style: "positron",
         attribution: "&copy; OpenStreetMap",
-        maxZoom: 25,
+        maxZoom: 20,
+        // minZoom: 16,
       }
     ).addTo(map);
     map.attributionControl.setPrefix("Ouva Delivery 🇹🇳");
@@ -55,7 +65,7 @@ export function LeafletMapPicker({
     const customIcon = L.icon({
       iconUrl: MAP_MARKER_ICON_ASSET_URL,
       iconRetinaUrl: MAP_MARKER_ICON_RETINA_ASSET_URL,
-      shadowUrl: MAP_MARKER_ICON_SHADOW_ASSET_URL,
+      shadowUrl: '', //MAP_MARKER_ICON_SHADOW_ASSET_URL,
       iconSize: [32, 32], // Adjust as needed
       shadowSize: [41, 41], // Adjust as needed
       iconAnchor: [16, 32], // Point of the icon that corresponds to the marker's location
