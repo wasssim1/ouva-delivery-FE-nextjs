@@ -119,8 +119,8 @@ export function InteractiveUserLocation() {
     setSelectedAddress(userInfoSelectedAddress); // move up
 
     setCurrentGeoCoordinates({
-      latitude: userInfoSelectedAddress.coordinates?.latitude || 0,
-      longitude: userInfoSelectedAddress.coordinates?.longitude || 0,
+      latitude: userInfoSelectedAddress?.coordinates?.latitude || 0,
+      longitude: userInfoSelectedAddress?.coordinates?.longitude || 0,
     });
   }, []);
 
