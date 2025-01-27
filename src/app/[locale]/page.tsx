@@ -53,7 +53,7 @@ export default function HomePage() {
               <Title>{t("pages.home.title")}</Title>
             </div>
 
-            <InteractiveUserLocation />
+            <InteractiveUserLocation/>
 
             {/* <div className="mt-10 text-center">
               <Link href={`/${language}/orders`}>

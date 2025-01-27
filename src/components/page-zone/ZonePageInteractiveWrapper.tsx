@@ -14,7 +14,6 @@ import { RootState } from "@/redux/store";
 import FoodStoreCard from "../card/FoodStoreCard";
 import FloatingButton from "../FloatingButton";
 import Header from "../Header";
-import { StoreCategoriesCarousel } from "../StoreCategoriesCarousel";
 import Title from "../typography/Title";
 import { SearchBar } from "../ui/search-bar";
 
@@ -143,7 +142,7 @@ export function ZonePageInteractiveWrapper({
     } else {
       setStoresList(storesListData);
     }
-  }, [selectedCategory]);
+  }, [selectedCategory, storesListData]);
 
   return (
     <>
@@ -166,13 +165,13 @@ export function ZonePageInteractiveWrapper({
 
       <div className="container">
         {/* Categories Cards */}
-        <div className="my-10 md:my-3 select-none w-full">
+        {/*  <div className="my-10 md:my-3 select-none w-full">
           <StoreCategoriesCarousel
             categories={storeCategoriesData}
             selectedCategory={selectedCategory}
             setSelectedCategory={setSelectedCategory}
           />
-        </div>
+        </div> */}
 
         {/* <code>{JSON.stringify(userInfo.selectedAddress)}</code> */}
 

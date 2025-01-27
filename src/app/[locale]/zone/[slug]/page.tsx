@@ -6,7 +6,6 @@ import LayoutContainer from "@/components/LayoutContainer";
 import Navbar from "@/components/navbar/Navbar";
 import { ZonePageInteractiveWrapper } from "@/components/page-zone/ZonePageInteractiveWrapper";
 
-import { FoodStore } from "@/interfaces/food-store.interface";
 import { Zone } from "@/interfaces/zone.interface";
 
 export async function generateStaticParams() {
@@ -45,7 +44,8 @@ export async function generateMetadata({
 
 const Page = async ({ params }: { params: { slug: string } }) => {
   const zoneData = await fetch(
-    `${process.env.NEXT_PUBLIC_OUVA_API_URL}/zones/${params.slug}/`
+    `${process.env.NEXT_PUBLIC_OUVA_API_URL}/zones/${params.slug}/`,
+    { cache: "no-store" }
   )
     .then((res) => res.json())
     .catch((err) => {
@@ -58,35 +58,36 @@ const Page = async ({ params }: { params: { slug: string } }) => {
   }
 
   const storesListDataResp = await fetch(
-    `${process.env.NEXT_PUBLIC_OUVA_API_URL}/food-stores/find?zone=${params.slug}`
-  )
-    .then((res) => res.json())
-    .catch((err) => {
-      console.error("Error fetching stores data - slug", { err });
-    });
-  const availableStoresListData = storesListDataResp.foundStoresInZone || [];
+    `${process.env.NEXT_PUBLIC_OUVA_API_URL}/food-stores/find?zone=${params.slug}`,
+    { cache: "no-store" }
+  );
+  const storeListData = await storesListDataResp.json();
+  if (!storeListData || storeListData.error) {
+    console.error(`Error fetching stores data by zone-slug: "${params.slug}"`);
+  }
+  const availableStoresListData = storeListData.foundStoresInZone;
 
-  const categoriesIdsSet = new Set();
-  availableStoresListData.forEach((store: FoodStore) => {
-    store.categories.forEach((categId) => {
-      categoriesIdsSet.add(categId);
-    });
-  });
-  const storeCategoriesDataResp = await fetch(
-    `${process.env.NEXT_PUBLIC_OUVA_API_URL}/store-categories/find?ids=${[
-      ...categoriesIdsSet,
-    ].join(",")}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  )
-    .then((res) => res.json())
-    .catch((err) => {
-      console.error("Error fetching store categories data - slug", { err });
-    });
+  // const categoriesIdsSet = new Set();
+  // availableStoresListData.forEach((store: FoodStore) => {
+  //   store.categories.forEach((categId) => {
+  //     categoriesIdsSet.add(categId);
+  //   });
+  // });
+  // const storeCategoriesDataResp = await fetch(
+  //   `${process.env.NEXT_PUBLIC_OUVA_API_URL}/store-categories/find?ids=${[
+  //     ...categoriesIdsSet,
+  //   ].join(",")}`,
+  //   {
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   }
+  // )
+  //   .then((res) => res.json())
+  //   .catch((err) => {
+  //     console.error("Error fetching store categories data - slug", { err });
+  //   });
 
   // const availableStoreCategoriesData = storeCategoriesDataResp?.categoriesList;
   // TODO: filter categories based on available stores

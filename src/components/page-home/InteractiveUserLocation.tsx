@@ -99,6 +99,14 @@ export function InteractiveUserLocation() {
   };
 
   const onSearchClick = () => {
+    if (
+      !selectedAddress?.formatted ||
+      !selectedAddress?.coordinates?.latitude ||
+      !selectedAddress?.coordinates?.longitude
+    ) {
+      setGeoLocError(t("pages.home.enableLocationAlert"));
+      return;
+    }
     if (!selectedAddress?.zone) {
       setGeoLocError(t("pages.home.zoneNotCovered"));
       return;
@@ -176,8 +184,9 @@ export function InteractiveUserLocation() {
 
           <div className="mx-1">
             <button
+              id="search-loc-btn"
               className="p-2 rounded-lg ring-1 ring-primary bg-primary text-white hover:text-primary hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isSearchButtonDisabled()}
+              // disabled={isSearchButtonDisabled()}
               onClick={onSearchClick}
             >
               <FaSearchLocation
